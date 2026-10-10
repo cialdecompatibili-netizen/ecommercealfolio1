@@ -203,3 +203,16 @@
 #negozio .nz-riga .nz-azioni .nz-step { width: 100%; }
 #negozio .nz-riga .nz-azioni .nz-add { margin: 0; box-sizing: border-box; }
 @media (max-width: 767.98px) { #negozio .nz-riga .nz-azioni .nz-step { width: 9rem; } }
+
+/* ===== Bottoni del carrello (/carrello/): ordine Svuota (rosso) - Continua lo shopping (arancio) - Procedi all'ordine (verde pieno).
+   Svuota e Continua hanno il contorno colorato (si riempiono al passaggio), Procedi e' pieno: e' l'azione principale. Solo dentro #nz-carrello-pag. */
+#nz-carrello-pag .nz-az-carrello { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin-top: 1.25rem; }
+#nz-carrello-pag .nz-b { --c: var(--nz-tema); display: inline-flex; align-items: center; justify-content: center; height: 3rem; padding: 0 1.5rem; margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: .01em; text-decoration: none; color: var(--c); background: transparent; border: 2px solid var(--c); border-radius: 999px; box-shadow: none; cursor: pointer; transition: background-color .15s, color .15s, box-shadow .15s; }
+#nz-carrello-pag .nz-b:hover, #nz-carrello-pag .nz-b:focus-visible { background: var(--c); color: #fff; text-decoration: none; }
+#nz-carrello-pag .nz-b:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+#nz-carrello-pag .nz-b:active { transform: translateY(1px); }
+#nz-carrello-pag .nz-b-svuota { --c: #c62828; }
+#nz-carrello-pag .nz-b-continua { --c: #e8730c; }
+#nz-carrello-pag .nz-b-vai { --c: #1f9d55; background: var(--c); color: #fff; }
+#nz-carrello-pag .nz-b-vai:hover, #nz-carrello-pag .nz-b-vai:focus-visible { background: #17803f; border-color: #17803f; }
+@media (max-width: 575.98px) { #nz-carrello-pag .nz-b { flex: 1 1 100%; } }

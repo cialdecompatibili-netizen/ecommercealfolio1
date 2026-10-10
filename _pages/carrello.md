@@ -14,10 +14,10 @@ ecommerce: true
 <tbody id="nz-righe"></tbody>
 </table>
 <p>Totale <span id="nz-totale" class="nz-totale"></span></p>
-<p class="nz-az-passo">
-<a class="btn btn-primary" id="nz-vai-ordine" href="{{ '/ordine/' | relative_url }}">Procedi all'ordine</a>
-<a class="btn btn-outline-secondary" href="{{ '/negozio/' | relative_url }}">Continua lo shopping</a>
-<button type="button" id="nz-svuota" class="btn btn-outline-secondary">Svuota il carrello</button>
+<p class="nz-az-passo nz-az-carrello">
+<button type="button" id="nz-svuota" class="btn nz-b nz-b-svuota">Svuota il carrello</button>
+<a class="btn nz-b nz-b-continua" href="{{ '/negozio/' | relative_url }}">Continua lo shopping</a>
+<a class="btn nz-b nz-b-vai" id="nz-vai-ordine" href="{{ '/ordine/' | relative_url }}">Procedi all'ordine</a>
 </p>
 </div>
 </div>
