@@ -25,11 +25,13 @@ horizontal: false
 {% if site.enable_project_categories and page.display_categories %}
   <!-- Mostra i progetti per categoria -->
   {% for category in page.display_categories %}
+  {% assign categorized_projects = site.projects | where: "category", category %}
+  {% assign sorted_projects = categorized_projects | sort: "importance" %}
+  <!-- Categoria senza progetti (o con tutti nascosti): non compare ne' il titolo ne' le card -->
+  {% if sorted_projects.size > 0 %}
   <a id="{{ category }}" href=".#{{ category }}">
     <h2 class="category">{{ category }}</h2>
   </a>
-  {% assign categorized_projects = site.projects | where: "category", category %}
-  {% assign sorted_projects = categorized_projects | sort: "importance" %}
   <!-- Genera le card per ogni progetto -->
   {% if page.horizontal %}
   <div class="container">
@@ -45,6 +47,7 @@ horizontal: false
       {% include projects.liquid %}
     {% endfor %}
   </div>
+  {% endif %}
   {% endif %}
   {% endfor %}
 
