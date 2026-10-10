@@ -152,3 +152,50 @@
 #negozio .nz-cnt { color: var(--nz-muto); font-size: .9rem; margin: 0 0 1rem; }
 .nz-menu { max-height: 70vh; overflow-y: auto; min-width: 15rem; }
 .nz-menu .nz-catlink { font-weight: 500; }
+
+/* ===== LISTA PRODOTTI a schede (stile PrestaShop 1.6 / WooCommerce): foto grande, nome, prezzo, descrizione breve, quantita' con + e - e bottone.
+   Stesso markup in /negozio/ (_pages/negozio.md) e nelle pagine categoria (_plugins/ecommerce.rb, riga()): se cambi uno, cambia l'altro.
+   Il JS del carrello legge .nz-box/.nz-prezzo/.nz-qta/.nz-add e i bottoni .nz-stp (+/-): non cambiare quelle classi. */
+#negozio .nz-lista { gap: 1rem; }
+#negozio .nz-riga { display: grid; grid-template-columns: 11rem minmax(0, 1fr) 13.5rem; gap: 1.5rem; align-items: center; padding: 1rem; border-radius: 16px; transition: box-shadow .15s, border-color .15s; }
+#negozio .nz-riga:hover { border-color: color-mix(in srgb, var(--nz-tema) 45%, var(--nz-bordo)); box-shadow: 0 6px 22px rgba(0, 0, 0, .07); }
+#negozio .nz-riga[hidden] { display: none; }
+#negozio .nz-riga .nz-icona { width: 100%; height: auto; aspect-ratio: 1 / 1; flex: none; font-size: 3.6rem; border-radius: 12px; background: color-mix(in srgb, var(--nz-tema) 6%, var(--nz-sfondo)); }
+#negozio .nz-riga .nz-testo h3 { margin: .1rem 0 .35rem; font-size: 1.25rem; line-height: 1.25; }
+#negozio .nz-riga .nz-prezzo { font-size: 1.35rem; line-height: 1.2; margin: 0 0 .5rem; }
+#negozio .nz-riga .nz-breve { margin: 0; color: var(--nz-muto); font-size: .98rem; line-height: 1.5; }
+#negozio .nz-riga .nz-azioni { display: flex; flex-direction: column; align-items: stretch; justify-content: center; gap: .6rem; }
+#negozio .nz-riga .nz-ok { align-self: center; min-height: 1.2em; }
+
+/* Quantita' con + e -: pillola, stessa altezza del bottone (anche nella scheda prodotto) */
+#negozio .nz-step { display: inline-flex; align-items: center; justify-content: space-between; height: 3rem; border: 1.5px solid var(--nz-bordo); border-radius: 999px; background: transparent; transition: border-color .15s, box-shadow .15s; }
+#negozio .nz-step:hover { border-color: var(--nz-tema); }
+#negozio .nz-step:focus-within { border-color: var(--nz-tema); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nz-tema) 20%, transparent); }
+#negozio .nz-step .nz-stp { flex: none; width: 2.7rem; height: 100%; padding: 0; border: 0; background: transparent; color: var(--nz-testo); font-size: 1.3rem; line-height: 1; border-radius: 999px; cursor: pointer; }
+#negozio .nz-step .nz-stp:hover { color: var(--nz-tema); }
+#negozio .nz-step .nz-stp:focus-visible { outline: none; color: var(--nz-tema); }
+#negozio .nz-step .nz-qta, #negozio .nz-step .nz-qta:hover, #negozio .nz-step .nz-qta:focus { flex: 1 1 auto; width: 2.6rem; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 0; box-shadow: none; outline: none; background: transparent; text-align: center; font-size: 1.05rem; color: var(--nz-testo); -moz-appearance: textfield; appearance: textfield; }
+#negozio .nz-step .nz-qta::-webkit-outer-spin-button, #negozio .nz-step .nz-qta::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* Bottone "Aggiungi al carrello" della lista: identico a quello della scheda prodotto (solo contorno, si riempie al passaggio) */
+#negozio .nz-azioni .nz-add { width: 100%; height: 3rem; padding: 0 1rem; font-size: 1rem; font-weight: 500; letter-spacing: .01em; color: var(--nz-tema); background: transparent; border: 1.5px solid var(--nz-tema); border-radius: 999px; box-shadow: none; transition: background-color .15s, color .15s, box-shadow .15s; }
+#negozio .nz-azioni .nz-add:hover { background: var(--nz-tema); color: #fff; }
+#negozio .nz-azioni .nz-add:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--nz-tema) 25%, transparent); }
+#negozio .nz-azioni .nz-add:active { transform: translateY(1px); }
+/* Scheda prodotto: la quantita' ora e' .nz-step (niente label) */
+#negozio .nz-pp-acq { align-items: center; }
+#negozio .nz-pp-acq .nz-step { width: 9rem; }
+
+@media (max-width: 767.98px) {
+  #negozio .nz-riga { grid-template-columns: 7.5rem minmax(0, 1fr); gap: 1rem; }
+  #negozio .nz-riga .nz-icona { font-size: 2.6rem; }
+  #negozio .nz-riga .nz-azioni { grid-column: 1 / -1; flex-direction: row; align-items: center; }
+  #negozio .nz-riga .nz-azioni .nz-step { flex: 0 0 9rem; }
+  #negozio .nz-riga .nz-azioni .nz-add { flex: 1 1 auto; width: auto; }
+  #negozio .nz-riga .nz-ok { flex: 1 0 100%; }
+}
+@media (max-width: 420px) {
+  #negozio .nz-riga { grid-template-columns: 6rem minmax(0, 1fr); }
+  #negozio .nz-riga .nz-azioni { flex-wrap: wrap; }
+  #negozio .nz-riga .nz-azioni .nz-add { flex: 1 0 100%; }
+}
