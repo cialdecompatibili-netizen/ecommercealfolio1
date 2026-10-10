@@ -117,6 +117,32 @@
     }
   }
 
+  /* Anteprima sempre dentro lo schermo: a ogni hover misuro il pop-up e lo sposto di quanto serve (a sinistra o a destra), con 8px di margine.
+     Funziona con qualunque posizione dell'icona e larghezza della finestra, senza breakpoint scritti nel codice. */
+  function tieniDentro() {
+    var p = document.getElementById("nz-prev");
+    if (!p || !p.firstChild) return;
+    p.style.transform = "";
+    var d = p.style.display;
+    var v = p.style.visibility;
+    p.style.display = "block";
+    p.style.visibility = "hidden";
+    var r = p.getBoundingClientRect();
+    var W = document.documentElement.clientWidth;
+    var m = 8;
+    var dx = 0;
+    if (r.right > W - m) dx = W - m - r.right;
+    if (r.left + dx < m) dx = m - r.left;
+    p.style.display = d;
+    p.style.visibility = v;
+    p.style.transform = dx ? "translateX(" + Math.round(dx) + "px)" : "";
+  }
+  if (link && link.parentNode) {
+    ["mouseenter", "focusin"].forEach(function (ev) {
+      link.parentNode.addEventListener(ev, tieniDentro);
+    });
+  }
+
   var radice = document.getElementById("negozio") || document.getElementById("nz-carrello-pag") || document.getElementById("nz-ordine-pag");
   if (!radice) {
     if (/\/grazie\/?$/.test(location.pathname)) salva({});
