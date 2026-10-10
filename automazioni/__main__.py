@@ -5,7 +5,7 @@ automazioni - script Python per gestire i siti Jekyll di questo progetto.
 Uso:  python -m automazioni <modulo> <comando> [opzioni]
       (oppure direttamente: python -m automazioni.menu elenco)
 
-Moduli: menu, pagine, footer, config_sito, post, progetti, news, servizi.   Dettagli: automazioni/README.md
+Moduli: menu, pagine, footer, config_sito, post, progetti, news, servizi, prodotti.   Dettagli: automazioni/README.md
 """
 import importlib
 import sys
@@ -19,6 +19,7 @@ MODULI = {
     "progetti": "progetti del portfolio (_projects/)",
     "news": "annunci brevi (_news/)",
     "servizi": "elenco servizi (solo lettura)",
+    "prodotti": "catalogo e-commerce: prodotti (fisico/digitale), categorie, import CSV",
 }
 
 
