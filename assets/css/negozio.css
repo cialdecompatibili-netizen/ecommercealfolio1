@@ -105,3 +105,31 @@
 .nz-riep { list-style: none; margin: 0 0 .75rem; padding: 0; }
 .nz-riep li { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem 0; border-bottom: 1px solid var(--nz-bordo); }
 .nz-vai { margin-top: 1.5rem; }
+
+/* Pagina prodotto (stile PrestaShop recente, ma pulito): foto a sinistra, prezzo/breve/acquisto a destra, poi descrizione completa e dettagli. */
+#negozio .nz-icona { overflow: hidden; }
+#negozio .nz-icona img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nz-brd { font-size: .85rem; color: var(--nz-muto); margin-bottom: 1.25rem; }
+.nz-brd a { color: inherit; }
+.nz-pp-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; }
+@media (min-width: 768px) {
+  .nz-pp-grid { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 3rem; }
+  .nz-pp-media { position: sticky; top: 5rem; }
+}
+.nz-pp-foto { aspect-ratio: 1 / 1; border-radius: 16px; overflow: hidden; border: 1px solid var(--nz-bordo); background: color-mix(in srgb, var(--nz-tema) 6%, var(--nz-sfondo)); display: flex; align-items: center; justify-content: center; }
+.nz-pp-foto img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nz-pp-ph { font-size: clamp(5rem, 18vw, 9rem); }
+.nz-pp-badge { display: inline-block; font-size: .8rem; padding: .2rem .7rem; border: 1px solid var(--nz-bordo); border-radius: 999px; color: var(--nz-muto); margin: 0 0 .75rem; }
+.nz-pp-prezzo { font-size: 2rem; line-height: 1.1; margin: 0 0 1rem; }
+.nz-pp-breve { font-size: 1.05rem; margin-bottom: 1.5rem; }
+.nz-pp-acq { display: flex; gap: .75rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1rem; }
+.nz-pp-acq label { margin: 0; font-size: .8rem; }
+.nz-pp-acq .nz-qta { width: 4.5rem; }
+.nz-pp-acq .nz-add { flex: 1 1 12rem; padding: .7rem 1.25rem; font-size: 1.05rem; }
+.nz-pp-nota { color: var(--nz-muto); font-size: .9rem; margin: 0; }
+.nz-pp-desc, .nz-pp-det { max-width: 760px; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--nz-bordo); }
+.nz-pp-desc h2, .nz-pp-det h2 { font-size: 1.25rem; margin-bottom: 1rem; }
+.nz-pp-det dl { display: grid; grid-template-columns: 9rem 1fr; gap: .5rem 1rem; margin: 0; }
+.nz-pp-det dt { font-weight: 500; color: var(--nz-muto); }
+.nz-pp-det dd { margin: 0; }
+.nz-pp-torna { margin-top: 2.5rem; }

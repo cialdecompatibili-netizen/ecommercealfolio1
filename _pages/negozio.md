@@ -19,7 +19,7 @@ ecommerce: true
 {% if b.visibile == false %}{% continue %}{% endif %}
 {% assign cat = site.data.catalogo.categorie | where: 'id', b.categoria | first %}
 <div class="nz-riga nz-box" data-id="{{ b.id }}" data-cat="{{ b.categoria }}" data-nome="{{ b.nome | escape }}" data-prezzo="{{ b.prezzo_centesimi }}" data-tipo="{{ b.tipo | default: 'fisico' }}">
-<div class="nz-icona">{{ b.icona }}</div>
+<div class="nz-icona">{% if b.immagine %}<img src="{% if b.immagine contains '://' %}{{ b.immagine }}{% else %}{{ '/' | append: b.immagine | relative_url }}{% endif %}" alt="" loading="lazy">{% else %}{{ b.icona }}{% endif %}</div>
 <div class="nz-testo">
 <p class="nz-cat">{{ cat.nome }} · {% if b.tipo == 'digitale' %}digitale{% else %}fisico{% endif %}</p>
 <h3><a href="{{ '/negozio/' | append: b.id | append: '/' | relative_url }}">{{ b.nome }}</a></h3>

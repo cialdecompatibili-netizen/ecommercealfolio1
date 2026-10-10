@@ -99,6 +99,8 @@
         '<label>Indirizzo (si vede nell\u0027URL: /negozio/<i>indirizzo</i>/)</label><input id="ec_id" value="' + esc(p.id || '') + '"' + (id ? ' readonly style="background:#f0f0f1"' : ' placeholder="vuoto = lo ricavo dal nome"') + '>' +
         '<small>' + (id ? 'Non si pu\u00f2 cambiare dopo la creazione: \u00e8 la chiave del carrello e degli ordini.' : 'Solo lettere minuscole, numeri e trattini. Dopo il salvataggio non si cambia pi\u00f9.') + '</small>' +
         '<label>Descrizione breve</label><textarea id="ec_desc" style="min-height:70px;font-family:inherit">' + esc(p.descrizione || '') + '</textarea>' +
+        '<label>Descrizione completa (si vede sotto la foto; ogni a capo = nuovo paragrafo)</label><textarea id="ec_full" style="min-height:140px;font-family:inherit">' + esc(p.descrizione_completa || '') + '</textarea>' +
+        '<label>Foto del prodotto</label><div id="ec_img_pv">' + (p.immagine ? '<img src="' + esc(A.rawUrl(p.immagine)) + '" style="max-width:240px;max-height:150px;border-radius:4px;border:1px solid #a7aaad;display:block;margin:6px 0"><small>' + esc(p.immagine) + '</small>' : '<small>Nessuna foto: nella pagina prodotto si vede l\u0027icona</small>') + '</div><input type="hidden" id="ec_img" value="' + esc(p.immagine || '') + '"><p><button type="button" class="btn" onclick="A.imgPick(\'ec_img\')">Scegli o carica foto</button> <button type="button" class="btn danger" onclick="A.imgClr(\'ec_img\')">Rimuovi</button></p>' +
         '<div class="row"><div><label>Categoria</label><select id="ec_cat">' + opt(cats, p.categoria || '') + '</select></div>' +
         '<div><label>Icona (una emoji)</label><input id="ec_ico" value="' + esc(p.icona || '') + '" maxlength="4"></div></div>' +
         '<div class="row"><div><label>Tipo di prodotto</label><select id="ec_tipo">' + opt([['fisico', 'Fisico (si spedisce: l\u0027ordine chiede l\u0027indirizzo)'], ['digitale', 'Digitale (nessun indirizzo)']], p.tipo === 'digitale' ? 'digitale' : 'fisico') + '</select></div>' +
@@ -118,8 +120,10 @@
       if (old && !prev) throw new Error('Prodotto non trovato: ricarica la pagina');
       if (!old && prev) throw new Error('Esiste gi\u00e0 un prodotto con questo indirizzo (' + id + '): cambialo');
       var n = { id: id, nome: nome, descrizione: $('ec_desc').value.trim(), categoria: $('ec_cat').value, icona: $('ec_ico').value.trim(), tipo: tipo, prezzo_centesimi: cents };
+      var full = $('ec_full').value.trim(); if (full) n.descrizione_completa = full;
+      var im = $('ec_img').value.trim(); if (im) n.immagine = /^(https?:)?\/\//.test(im) ? im : im.replace(/^.*?(assets\/img\/)/, '$1');
       n.visibile = $('ec_vis').checked;
-      if (prev) for (var k in prev) if (!(k in n) && k !== 'intervallo' && k !== 'ogni') n[k] = prev[k]; // chiavi extra scritte a mano restano
+      if (prev) for (var k in prev) if (!(k in n) && k !== 'intervallo' && k !== 'ogni' && k !== 'descrizione_completa' && k !== 'immagine') n[k] = prev[k]; // chiavi extra scritte a mano restano
       if (prev) c.d.prodotti[c.d.prodotti.indexOf(prev)] = n; else c.d.prodotti.push(n);
       return save(c, 'admin: e-commerce ' + (prev ? 'modifica ' : 'nuovo ') + id).then(function () { A.toast('Salvato'); A.go('ecom'); });
     });
