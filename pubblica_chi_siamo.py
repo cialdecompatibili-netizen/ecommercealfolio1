@@ -104,7 +104,7 @@ def bottoni(nomi: list, c: dict, p: str) -> str:
             classe = "pri" if not c.get("whatsapp") else ""
             out.append(f'<a class="{p}-btn {classe}" href="{url(c["link_preventivo"])}">{c["testo_preventivo"]}</a>')
         elif n == "servizi":
-            out.append(f'<a class="{p}-btn" href="{url(c["link_servizi"])}">{c["testo_servizi"]}</a>')
+            out.append("{% if site.ecommerce == true %}" + f'<a class="{p}-btn" href="{url(c["link_servizi"])}">{c["testo_servizi"]}</a>' + "{% endif %}")  # spento l'e-commerce il bottone sparisce
     return "\n".join(out)
 
 
