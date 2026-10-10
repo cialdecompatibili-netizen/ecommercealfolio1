@@ -199,3 +199,7 @@
   #negozio .nz-riga .nz-azioni { flex-wrap: wrap; }
   #negozio .nz-riga .nz-azioni .nz-add { flex: 1 0 100%; }
 }
+
+#negozio .nz-riga .nz-azioni .nz-step { width: 100%; }
+#negozio .nz-riga .nz-azioni .nz-add { margin: 0; box-sizing: border-box; }
+@media (max-width: 767.98px) { #negozio .nz-riga .nz-azioni .nz-step { width: 9rem; } }
