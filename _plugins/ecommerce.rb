@@ -7,7 +7,8 @@
 # 2) Spento = spariscono dalla build (quindi dal menu, dalla sitemap e dagli URL) tutte le pagine con `ecommerce: true`
 #    nel front matter (/negozio/, /grazie/), le pagine prodotto generate qui e i file statici del negozio (FILE_STATICI). Il codice resta nel repo.
 # 3) Le pagine prodotto /negozio/<id>/ nascono da _data/catalogo.json (stessa fonte del Worker e dell'admin).
-#    Prodotti con `visibile: false` o id non valido (solo a-z 0-9 e -) vengono saltati.
+#    Prodotti con `visibile: false` o id non valido (solo a-z 0-9 e -) vengono saltati. L'id 'categoria' e' riservato.
+# 3b) Pagine categoria /negozio/categoria/<id>/ generate qui (solo categorie con almeno un prodotto visibile); il menu Negozio (header.liquid) elenca le stesse categorie.
 # 4) Nuove pagine del negozio: mettere `ecommerce: true` nel front matter, altrimenti restano online a e-commerce spento.
 require 'cgi'
 
@@ -56,7 +57,7 @@ module BoxEcommerce
       corpo = prodotto['descrizione_completa'].to_s.strip.split(/\n+/).map { |r| "<p>#{e.(r)}</p>" }.join("\n")
       corpo = "<p>#{e.(prodotto['descrizione'])}</p>" if corpo.empty?
       tipo_txt = digitale ? 'Prodotto digitale' : 'Prodotto fisico'
-      cat_link = categoria ? " &rsaquo; #{e.(categoria['nome'])}" : ''
+      cat_link = categoria ? " &rsaquo; <a href=\"#{e.(base)}/negozio/categoria/#{e.(categoria['id'])}/\">#{e.(categoria['nome'])}</a>" : ''
       self.content = <<~HTML
         <div id="negozio" class="nz-pp" data-worker="#{e.(worker)}">
         <nav class="nz-brd" aria-label="Percorso"><a href="#{e.(base)}/negozio/">Negozio</a>#{cat_link} &rsaquo; <span>#{e.(prodotto['nome'])}</span></nav>
@@ -82,6 +83,67 @@ module BoxEcommerce
     end
   end
 
+  # Riga prodotto (stessa struttura di _pages/negozio.md: il JS del carrello lavora su .nz-box con data-id/data-prezzo).
+  def self.riga(site, p, cat)
+    e = ->(v) { CGI.escapeHTML(v.to_s) }
+    base = site.baseurl.to_s
+    foto = url_img(site, p['immagine'])
+    icona = foto.empty? ? e.(p['icona']) : "<img src=\"#{e.(foto)}\" alt=\"\" loading=\"lazy\">"
+    digitale = p['tipo'] == 'digitale'
+    <<~HTML
+      <div class="nz-riga nz-box" data-id="#{e.(p['id'])}" data-cat="#{e.(p['categoria'])}" data-nome="#{e.(p['nome'])}" data-prezzo="#{p['prezzo_centesimi'].to_i}" data-tipo="#{digitale ? 'digitale' : 'fisico'}">
+      <div class="nz-icona">#{icona}</div>
+      <div class="nz-testo">
+      <p class="nz-cat">#{e.(cat ? cat['nome'] : '')} &middot; #{digitale ? 'digitale' : 'fisico'}</p>
+      <h3><a href="#{e.(base)}/negozio/#{e.(p['id'])}/">#{e.(p['nome'])}</a></h3>
+      <p>#{e.(p['descrizione'])}</p>
+      </div>
+      <div class="nz-prezzo fw-bold"></div>
+      <div class="nz-azioni">
+      <label>Quantità<input type="number" class="form-control nz-qta" min="1" max="20" value="1"></label>
+      <button type="button" class="btn btn-primary nz-add">Aggiungi</button>
+      <span class="nz-ok" aria-live="polite"></span>
+      </div>
+      </div>
+    HTML
+  end
+
+  # /negozio/categoria/<id>/ : elenco dei prodotti visibili della categoria, con le altre categorie come link (navigazione stile WooCommerce).
+  class PaginaCategoria < Jekyll::PageWithoutAFile
+    def initialize(site, categoria, categorie, prodotti)
+      super(site, site.source, File.join('negozio', 'categoria', categoria['id']), 'index.html')
+      e = ->(v) { CGI.escapeHTML(v.to_s) }
+      base = site.baseurl.to_s
+      tracker = ((site.config['ordini'] || {})['tracker']).to_s
+      worker = ((site.data['negozio'] || {})['worker_url']).to_s
+      self.data = {
+        'layout' => 'page',
+        'title' => "#{categoria['icona']} #{categoria['nome']}".strip,
+        'description' => "Prodotti della categoria #{categoria['nome']}.",
+        'ecommerce' => true,
+        'nav' => false
+      }
+      pillole = categorie.map do |k|
+        on = k['id'] == categoria['id'] ? ' on' : ''
+        "<a class=\"nz-cpill#{on}\" href=\"#{e.(base)}/negozio/categoria/#{e.(k['id'])}/\">#{e.(k['icona'])} #{e.(k['nome'])}</a>"
+      end.join("\n")
+      righe = prodotti.map { |p| BoxEcommerce.riga(site, p, categoria) }.join
+      self.content = <<~HTML
+        <div id="negozio" data-tracker="#{e.(tracker)}" data-worker="#{e.(worker)}">
+        <nav class="nz-brd" aria-label="Percorso"><a href="#{e.(base)}/negozio/">Negozio</a> &rsaquo; <span>#{e.(categoria['nome'])}</span></nav>
+        <div class="nz-pills"><a class="nz-cpill" href="#{e.(base)}/negozio/">Tutti</a>
+        #{pillole}
+        </div>
+        <p class="nz-cnt">#{prodotti.size} #{prodotti.size == 1 ? 'prodotto' : 'prodotti'}</p>
+        <div class="nz-lista">
+        #{righe}
+        </div>
+        <p class="nz-vai"><a class="btn btn-outline-secondary" href="#{e.(base)}/carrello/">Vai al carrello</a></p>
+        </div>
+      HTML
+    end
+  end
+
   class Generatore < Jekyll::Generator
     safe true
     priority :low
@@ -91,11 +153,18 @@ module BoxEcommerce
 
       catalogo = site.data['catalogo'] || {}
       cats = (catalogo['categorie'] || []).each_with_object({}) { |c, h| h[c['id']] = c }
-      (catalogo['prodotti'] || []).each do |p|
-        next if p['visibile'] == false
-        next unless p['id'].to_s.match?(/\A[a-z0-9-]+\z/)
+      visibili = (catalogo['prodotti'] || []).select do |p|
+        p['visibile'] != false && p['id'].to_s.match?(/\A[a-z0-9-]+\z/) && p['id'] != 'categoria'
+      end
+      visibili.each { |p| site.pages << PaginaProdotto.new(site, p, cats[p['categoria']]) }
 
-        site.pages << PaginaProdotto.new(site, p, cats[p['categoria']])
+      # Pagine categoria: solo per le categorie con almeno un prodotto visibile (id valido).
+      elenco = (catalogo['categorie'] || []).select { |k| k['id'].to_s.match?(/\A[a-z0-9-]+\z/) }
+      elenco.each do |k|
+        dentro = visibili.select { |p| p['categoria'] == k['id'] }
+        next if dentro.empty?
+
+        site.pages << PaginaCategoria.new(site, k, elenco.select { |x| visibili.any? { |p| p['categoria'] == x['id'] } }, dentro)
       end
     end
   end
