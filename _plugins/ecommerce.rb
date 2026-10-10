@@ -68,7 +68,7 @@ module BoxEcommerce
         <p class="nz-prezzo nz-pp-prezzo fw-bold"></p>
         <p class="nz-pp-breve">#{e.(prodotto['descrizione'])}</p>
         <div class="nz-pp-acq">
-        <label>Quantità<input type="number" class="form-control nz-qta" min="1" max="20" value="1"></label>
+        <div class="nz-step"><button type="button" class="nz-stp" data-d="-1" aria-label="Meno">&minus;</button><input type="number" class="nz-qta" min="1" max="20" value="1" aria-label="Quantità"><button type="button" class="nz-stp" data-d="1" aria-label="Più">+</button></div>
         <button type="button" class="btn btn-primary nz-add">Aggiungi al carrello</button>
         <span class="nz-ok" aria-live="polite"></span>
         </div>
@@ -96,12 +96,12 @@ module BoxEcommerce
       <div class="nz-testo">
       <p class="nz-cat">#{e.(cat ? cat['nome'] : '')} &middot; #{digitale ? 'digitale' : 'fisico'}</p>
       <h3><a href="#{e.(base)}/negozio/#{e.(p['id'])}/">#{e.(p['nome'])}</a></h3>
-      <p>#{e.(p['descrizione'])}</p>
-      </div>
       <div class="nz-prezzo fw-bold"></div>
+      <p class="nz-breve">#{e.(p['descrizione'])}</p>
+      </div>
       <div class="nz-azioni">
-      <label>Quantità<input type="number" class="form-control nz-qta" min="1" max="20" value="1"></label>
-      <button type="button" class="btn btn-primary nz-add">Aggiungi</button>
+      <div class="nz-step"><button type="button" class="nz-stp" data-d="-1" aria-label="Meno">&minus;</button><input type="number" class="nz-qta" min="1" max="20" value="1" aria-label="Quantità"><button type="button" class="nz-stp" data-d="1" aria-label="Più">+</button></div>
+      <button type="button" class="btn btn-primary nz-add">Aggiungi al carrello</button>
       <span class="nz-ok" aria-live="polite"></span>
       </div>
       </div>

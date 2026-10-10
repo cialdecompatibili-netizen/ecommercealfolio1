@@ -23,12 +23,12 @@ ecommerce: true
 <div class="nz-testo">
 <p class="nz-cat"><a href="{{ '/negozio/categoria/' | append: b.categoria | append: '/' | relative_url }}">{{ cat.nome }}</a> · {% if b.tipo == 'digitale' %}digitale{% else %}fisico{% endif %}</p>
 <h3><a href="{{ '/negozio/' | append: b.id | append: '/' | relative_url }}">{{ b.nome }}</a></h3>
-<p>{{ b.descrizione }}</p>
-</div>
 <div class="nz-prezzo fw-bold"></div>
+<p class="nz-breve">{{ b.descrizione }}</p>
+</div>
 <div class="nz-azioni">
-<label>Quantità<input type="number" class="form-control nz-qta" min="1" max="20" value="1"></label>
-<button type="button" class="btn btn-primary nz-add">Aggiungi</button>
+<div class="nz-step"><button type="button" class="nz-stp" data-d="-1" aria-label="Meno">&minus;</button><input type="number" class="nz-qta" min="1" max="20" value="1" aria-label="Quantità"><button type="button" class="nz-stp" data-d="1" aria-label="Più">+</button></div>
+<button type="button" class="btn btn-primary nz-add">Aggiungi al carrello</button>
 <span class="nz-ok" aria-live="polite"></span>
 </div>
 </div>

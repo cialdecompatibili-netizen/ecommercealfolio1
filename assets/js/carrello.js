@@ -231,6 +231,24 @@
     b2.focus();
   }
 
+  /* ---------- quantita' con + e - (lista prodotti e scheda prodotto) ---------- */
+  function limita(i) {
+    var v = parseInt(i.value, 10);
+    if (!(v >= 1)) v = 1;
+    i.value = Math.min(MAX, v);
+  }
+  radice.addEventListener("click", function (ev) {
+    var s = ev.target.closest(".nz-stp");
+    if (!s) return;
+    var i = s.parentNode.querySelector(".nz-qta");
+    if (!i) return;
+    i.value = (parseInt(i.value, 10) || 1) + Number(s.dataset.d);
+    limita(i);
+  });
+  radice.addEventListener("change", function (ev) {
+    if (ev.target.classList && ev.target.classList.contains("nz-qta")) limita(ev.target);
+  });
+
   /* ---------- azioni ---------- */
   radice.addEventListener("click", function (ev) {
     var pill = ev.target.closest(".nz-pill");
