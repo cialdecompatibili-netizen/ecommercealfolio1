@@ -215,7 +215,20 @@
 #nz-carrello-pag .nz-b-continua { --c: #e8730c; }
 #nz-carrello-pag .nz-b-vai { --c: #1f9d55; background: var(--c); color: #fff; }
 #nz-carrello-pag .nz-b-vai:hover, #nz-carrello-pag .nz-b-vai:focus-visible { background: #17803f; border-color: #17803f; }
-@media (max-width: 575.98px) { #nz-carrello-pag .nz-b { flex: 1 1 100%; } }
+/* Mobile: ordine invertito (in alto Procedi all'ordine, poi Continua lo shopping, in fondo Svuota il carrello). Su desktop resta Svuota - Continua - Procedi. */
+@media (max-width: 575.98px) {
+  #nz-carrello-pag .nz-az-carrello { flex-direction: column-reverse; align-items: stretch; flex-wrap: nowrap; }
+  #nz-carrello-pag .nz-b { flex: none; width: 100%; }
+}
+/* Prodotto nel carrello: miniatura + nome sono un unico link alla scheda prodotto */
+#nz-carrello-pag .nz-pr { display: inline-flex; align-items: center; gap: .75rem; color: inherit; text-decoration: none; }
+#nz-carrello-pag .nz-pr:hover .nz-pr-n, #nz-carrello-pag .nz-pr:focus-visible .nz-pr-n { text-decoration: underline; color: var(--nz-tema); }
+#nz-carrello-pag .nz-pr:focus-visible { outline: 2px solid color-mix(in srgb, var(--nz-tema) 50%, transparent); outline-offset: 3px; border-radius: 8px; }
+#nz-carrello-pag .nz-pr-i { flex: 0 0 3.2rem; width: 3.2rem; height: 3.2rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--nz-bordo); border-radius: 10px; font-size: 1.5rem; background: color-mix(in srgb, var(--nz-tema) 6%, var(--nz-sfondo)); }
+#nz-carrello-pag .nz-pr-i img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Anteprima del carrello nel menu: il nome del prodotto e' un link alla scheda */
+.nz-prev li a { color: inherit; text-decoration: none; }
+.nz-prev li a:hover, .nz-prev li a:focus-visible { text-decoration: underline; }
 
 /* ===== ORDINE (/ordine/): due colonne (form a passi + riepilogo fisso), passi a cerchietti, campi moderni, metodi di pagamento, bottoni come il carrello.
    Tutto scoped su #nz-ordine-pag. Il JS (carrello.js) usa gli id nz-o-*, .nz-passo, .nz-steps li, [data-nav], .nz-pay-o, #nz-riep-dati, #nz-sum-*: non cambiarli. */
