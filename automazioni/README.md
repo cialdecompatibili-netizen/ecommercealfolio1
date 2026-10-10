@@ -158,3 +158,16 @@ Da verificare (non controllato): `_teachings/`, `_books/`, `_bibliography/` e i 
 Esistono come cartelle del tema ma non so se il sito li usa: se non servono, non fare moduli.
 
 Prima di aggiungere un modulo seguire "Regola per ogni nuovo script" qui sopra e togliere la voce da questa lista.
+
+### Prodotti e categorie (`_data/catalogo.json`)
+
+Stessa fonte dell'admin (Prodotti / Categorie prodotti). Prezzo in euro; `tipo` = fisico | digitale (digitale = nessun indirizzo di spedizione). L'id e' l'URL e non si cambia. Punti critici in testa a `prodotti.py`.
+
+```bash
+python -m automazioni prodotti elenco [--categoria X] [--tipo digitale] [--nascosti]
+python -m automazioni prodotti crea --nome "Olio EVO" --prezzo 11,90 --categoria dispensa --breve "..." --testo-file lungo.txt --dry-run
+python -m automazioni prodotti campo <id> prezzo=12,50 tipo=digitale
+python -m automazioni prodotti nascondi <id>      # oppure mostra
+python -m automazioni prodotti importa prodotti.csv --push
+python -m automazioni prodotti cat-elenco | cat-crea | cat-campo | cat-sposta | cat-elimina
+```
