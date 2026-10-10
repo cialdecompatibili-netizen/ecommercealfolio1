@@ -151,6 +151,6 @@
 #negozio .nz-cpill.on { background: var(--nz-tema); border-color: var(--nz-tema); color: #fff; }
 #negozio .nz-cnt { color: var(--nz-muto); font-size: .9rem; margin: 0 0 1rem; }
 .nz-menu { max-height: 70vh; overflow-y: auto; min-width: 15rem; }
-.nz-menu .nz-catlink { font-weight: 600; }
+.nz-menu .nz-catlink { font-weight: 500; }
 .nz-menu .nz-sub { padding-left: 1.9rem; font-size: .9rem; color: var(--nz-muto); }
 .nz-menu .nz-sub:hover { color: var(--nz-testo); }

@@ -126,21 +126,18 @@
             {% if p.nav and p.autogen == null %}
               {% if p.permalink == '/negozio/' %}
                 {% comment %}
-                  MENU NEGOZIO (dinamico, da _data/catalogo.json): Tutto il negozio, poi per ogni categoria con prodotti visibili il suo link e i suoi prodotti, poi il carrello.
+                  MENU NEGOZIO (dinamico, da _data/catalogo.json): Tutto il negozio, poi SOLO le categorie con prodotti visibili (i prodotti NON vanno qui: il menu diventerebbe enorme), poi il carrello.
                   Compare solo con ecommerce: true perche' la pagina /negozio/ (nav: true) sparisce a e-commerce spento. Stile in negozio.css (.nz-menu, .nz-sub).
                 {% endcomment %}
                 <li class="nav-item dropdown {% if page.url contains '/negozio/' or page.url contains '/carrello/' %}active{% endif %}">
                   <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-negozio" role="button" data-nav-dropdown-toggle="true" aria-haspopup="true" aria-expanded="false">{{- p.title -}}</a>
                   <div class="dropdown-menu dropdown-menu-right nz-menu" aria-labelledby="navbarDropdown-negozio">
                     <a class="dropdown-item" href="{{ '/negozio/' | relative_url }}">Tutto il negozio</a>
+                    <div class="dropdown-divider"></div>
                     {% for c in site.data.catalogo.categorie %}
                       {% assign nz_prod = site.data.catalogo.prodotti | where_exp: 'x', 'x.categoria == c.id and x.visibile != false' %}
                       {% if nz_prod.size > 0 %}
-                        <div class="dropdown-divider"></div>
                         <a class="dropdown-item nz-catlink" href="{{ '/negozio/categoria/' | append: c.id | append: '/' | relative_url }}">{{ c.icona }} {{ c.nome }}</a>
-                        {% for b in nz_prod %}
-                          <a class="dropdown-item nz-sub" href="{{ '/negozio/' | append: b.id | append: '/' | relative_url }}">{{ b.nome }}</a>
-                        {% endfor %}
                       {% endif %}
                     {% endfor %}
                     <div class="dropdown-divider"></div>
