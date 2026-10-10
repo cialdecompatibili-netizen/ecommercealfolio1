@@ -396,10 +396,35 @@
         cont.appendChild(d);
       };
       riga("Contatto", val("nz-o-nome") + " " + val("nz-o-cognome") + " \u00b7 " + val("nz-o-email") + (val("nz-o-tel") ? " \u00b7 " + val("nz-o-tel") : ""));
-      riga(serve() ? "Spedizione" : "Consegna", serve() ? indirizzo() : "Prodotti digitali: li ricevi via email, nessuna spedizione.");
+      var haDig = Object.keys(leggi()).some(function (id) {
+        return box[id] && leggi()[id] > 0 && !box[id].fisico;
+      });
+      riga(serve() ? "Spedizione" : "Consegna", serve() ? indirizzo() + (haDig ? " (i prodotti digitali arrivano via email)" : "") : "Prodotti digitali: li ricevi via email, nessuna spedizione.");
       inviaOrd.textContent = "Paga " + euro.format(totale() / 100);
     };
+    /* testi che dipendono dal contenuto del carrello: solo digitali = niente spedizione/reso/corriere; solo fisici = spedizione e reso; misto = entrambi */
+    var adattaTipo = function () {
+      var c = leggi();
+      var fisici = serve();
+      var digitali = Object.keys(c).some(function (id) {
+        return box[id] && c[id] > 0 && !box[id].fisico;
+      });
+      var ul = document.getElementById("nz-sum-fiducia");
+      if (ul) {
+        var voci = [];
+        if (fisici) voci.push("Spedizione tracciata", "Reso entro 14 giorni");
+        if (digitali) voci.push(fisici ? "Prodotti digitali via email, senza spedizione" : "Download immediato via email");
+        voci.push("Assistenza via email");
+        ul.innerHTML = "";
+        voci.forEach(function (v) {
+          ul.appendChild(el("li", v));
+        });
+      }
+      var h = document.getElementById("nz-o-tel-h");
+      if (h) h.textContent = fisici ? "(facoltativo, utile al corriere)" : "(facoltativo)";
+    };
     vai = function (n, senzaFocus) {
+      adattaTipo();
       var l = elenco();
       if (l.indexOf(n) < 0) n = l[l.length - 1]; // il passo 2 sparisce se il carrello diventa tutto digitale
       passo = n;

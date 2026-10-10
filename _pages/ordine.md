@@ -25,7 +25,7 @@ ecommerce: true
 <div class="nz-f"><label for="nz-o-cognome">Cognome</label><input type="text" id="nz-o-cognome" maxlength="60" required autocomplete="family-name"></div>
 </div>
 <div class="nz-f"><label for="nz-o-email">Email</label><input type="email" id="nz-o-email" maxlength="150" required autocomplete="email" placeholder="nome@esempio.it"></div>
-<div class="nz-f"><label for="nz-o-tel">Telefono <span class="nz-opz">(facoltativo, utile al corriere)</span></label><input type="tel" id="nz-o-tel" maxlength="30" autocomplete="tel" inputmode="tel"></div>
+<div class="nz-f"><label for="nz-o-tel">Telefono <span class="nz-opz" id="nz-o-tel-h">(facoltativo, utile al corriere)</span></label><input type="tel" id="nz-o-tel" maxlength="30" autocomplete="tel" inputmode="tel"></div>
 <p class="nz-err" role="alert"></p>
 <div class="nz-az-ord"><a class="btn nz-b nz-b-neutro" href="{{ '/carrello/' | relative_url }}">Torna al carrello</a> <button type="button" class="btn nz-b nz-b-vai" data-nav="avanti">Continua</button></div>
 </section>
@@ -72,7 +72,7 @@ ecommerce: true
 <h2 class="nz-sum-t">Riepilogo ordine</h2>
 <ul id="nz-sum-righe" class="nz-sum-righe"></ul>
 <p class="nz-sum-tot"><span>Totale</span> <strong id="nz-sum-tot"></strong></p>
-<ul class="nz-sum-fiducia"><li>Spedizione tracciata</li><li>Reso entro 14 giorni</li><li>Assistenza via email</li></ul>
+<ul id="nz-sum-fiducia" class="nz-sum-fiducia"><li>Assistenza via email</li></ul>
 </aside>
 </div>
 </div>
