@@ -136,6 +136,24 @@
   });
 
   /* ---------- carrello (/carrello/) e stato della pagina ordine (/ordine/) ---------- */
+  /* riepilogo a lato di /ordine/ (#nz-sum-righe, #nz-sum-tot): si ridisegna a ogni disegna() */
+  function sommario(ids, c, tot) {
+    var ul = document.getElementById("nz-sum-righe");
+    var tt = document.getElementById("nz-sum-tot");
+    if (ul) {
+      ul.innerHTML = "";
+      ids.forEach(function (id) {
+        var li = el("li");
+        var n = el("span", undefined, "nz-sum-n");
+        n.appendChild(el("span", box[id].nome));
+        n.appendChild(el("small", "\u00d7 " + c[id] + (box[id].fisico ? "" : " \u00b7 digitale")));
+        li.appendChild(n);
+        li.appendChild(el("span", euro.format((box[id].prezzo * c[id]) / 100)));
+        ul.appendChild(li);
+      });
+    }
+    if (tt) tt.textContent = euro.format(tot / 100);
+  }
   var concluso = false; // ordine inviato: nascondo carrello e modulo
   function disegna() {
     badge();
@@ -168,6 +186,7 @@
       tot += box[id].prezzo * q;
       n += q;
     });
+    sommario(ids, c, tot);
     var vuoto = document.getElementById("nz-vuoto");
     var pieno = document.getElementById("nz-pieno");
     var tt = document.getElementById("nz-totale");
@@ -295,20 +314,43 @@
     }
   });
 
-  /* ---------- ORDINE A PASSI (/ordine/): SMOKE TEST, NESSUN PAGAMENTO, NESSUN WORKER ----------
-     Passi: 1 Dati (nome, email) -> 2 Spedizione (SOLO se nel carrello c'e' un prodotto fisico) -> 3 Conferma (riepilogo + invio).
-     All'invio il browser scrive UNA RIGA nel foglio Google chiamando l'Apps Script "tracker" (_config.yml > ordini.tracker, nessun indirizzo scritto qui).
-     Convenzione di order-save.php di CartaCMS: sito = dominio+pagina, bottone "ordine-completato", prodotto "nome xQta [#id]", prezzo = totale in euro,
-     browser = "smoke-test", device = "email | nome | indirizzo" (oppure "| digitale").
-     Limiti noti: la risposta del tracker e' opaca (no-cors). Antispam leggero lato browser (campo trappola + 3 secondi minimi): ok per un test, non per un negozio vero. */
+  /* ORDINE (/ordine/): passi Dati > Spedizione (solo se c'e' un prodotto fisico) > Pagamento.
+     SMOKE TEST: nessun pagamento reale e NESSUN dato di carta raccolto (si sceglie solo il metodo). Alla conferma si scrive UNA RIGA nel foglio Google
+     (tracker, _config.yml > ordini.tracker) con ordine, dati di spedizione e metodo scelto, poi si mostra un errore di pagamento (modalita' test):
+     il carrello resta com'e' e si puo' riprovare o cambiare metodo.
+     Riga: bottone "ordine-errore-pagamento-test", prodotto "nome xQta [#id]", prezzo = totale in euro, browser "smoke-test",
+     device "email | nome cognome | telefono | indirizzo (o digitale) | pagamento: metodo | esito: errore | note".
+     Limiti noti: risposta del tracker opaca (no-cors); antispam leggero lato browser (campo trappola + 3 secondi minimi). */
   var modulo = document.getElementById("nz-ordine");
   var passo = 1;
   var vai = function () {};
+  var PAGAMENTI = {
+    carta: "Carta di credito o debito",
+    bancomat: "Bancomat / PagoBANCOMAT",
+    paypal: "PayPal",
+    applepay: "Apple Pay",
+    googlepay: "Google Pay",
+    satispay: "Satispay",
+    bonifico: "Bonifico bancario",
+  };
+  var ERRORI = {
+    carta: "Errore: il pagamento con carta è stato rifiutato dall'emittente (codice 05).",
+    bancomat: "Errore: il circuito PagoBANCOMAT non ha autorizzato l'operazione (codice 51).",
+    paypal: "Errore: non è stato possibile completare il pagamento con PayPal.",
+    applepay: "Errore: Apple Pay non è disponibile su questo dispositivo.",
+    googlepay: "Errore: Google Pay non ha confermato il pagamento (timeout).",
+    satispay: "Errore: la richiesta Satispay è scaduta senza conferma.",
+    bonifico: "Errore: impossibile generare le coordinate per il bonifico.",
+  };
   if (modulo) {
     var tracker = radice.dataset.tracker || "";
     var esitoOrd = document.getElementById("nz-o-esito");
     var inviaOrd = document.getElementById("nz-o-invia");
     var t0Ord = Date.now(); // apertura pagina
+    var val = function (id) {
+      var x = document.getElementById(id);
+      return x ? x.value.trim() : "";
+    };
     var sicuro = function (s) {
       s = String(s || "").trim();
       return /^[=+\-@]/.test(s) ? "'" + s : s; // niente formule iniettate nel foglio
@@ -326,22 +368,36 @@
       var p = modulo.querySelector('[data-passo="' + n + '"] .nz-err');
       if (p) p.textContent = m || "";
     };
-    var riepilogoOrd = function () {
+    var metodo = function () {
+      var r = modulo.querySelector('input[name="nz-pay"]:checked');
+      return r ? r.value : "carta";
+    };
+    var totale = function () {
       var c = leggi();
-      var ul = document.getElementById("nz-riep");
       var tot = 0;
-      ul.innerHTML = "";
       Object.keys(c).forEach(function (id) {
-        if (!box[id] || !(c[id] > 0)) return;
-        var li = el("li");
-        li.appendChild(el("span", c[id] + " \u00d7 " + box[id].nome));
-        li.appendChild(el("span", euro.format((box[id].prezzo * c[id]) / 100)));
-        ul.appendChild(li);
-        tot += box[id].prezzo * c[id];
+        if (box[id] && c[id] > 0) tot += box[id].prezzo * c[id];
       });
-      document.getElementById("nz-riep-tot").textContent = euro.format(tot / 100);
-      document.getElementById("nz-riep-dati").textContent =
-        document.getElementById("nz-o-nome").value.trim() + " \u00b7 " + document.getElementById("nz-o-email").value.trim() + (serve() ? " \u00b7 " + document.getElementById("nz-o-ind").value.trim() : "");
+      return tot;
+    };
+    var indirizzo = function () {
+      if (!serve()) return "";
+      var via = [val("nz-o-ind"), val("nz-o-ind2")].filter(Boolean).join(", ");
+      var pr = val("nz-o-prov").toUpperCase();
+      return via + " - " + val("nz-o-cap") + " " + val("nz-o-citta") + (pr ? " (" + pr + ")" : "") + " - " + val("nz-o-paese");
+    };
+    var riepilogoOrd = function () {
+      var cont = document.getElementById("nz-riep-dati");
+      cont.innerHTML = "";
+      var riga = function (k, v) {
+        var d = el("div", undefined, "nz-recap-r");
+        d.appendChild(el("span", k, "nz-recap-k"));
+        d.appendChild(el("span", v, "nz-recap-v"));
+        cont.appendChild(d);
+      };
+      riga("Contatto", val("nz-o-nome") + " " + val("nz-o-cognome") + " \u00b7 " + val("nz-o-email") + (val("nz-o-tel") ? " \u00b7 " + val("nz-o-tel") : ""));
+      riga(serve() ? "Spedizione" : "Consegna", serve() ? indirizzo() : "Prodotti digitali: li ricevi via email, nessuna spedizione.");
+      inviaOrd.textContent = "Paga " + euro.format(totale() / 100);
     };
     vai = function (n, senzaFocus) {
       var l = elenco();
@@ -360,33 +416,31 @@
       });
       if (n === 3) riepilogoOrd();
       if (!senzaFocus) {
-        var f = modulo.querySelector('[data-passo="' + n + '"] input');
+        esitoOrd.hidden = true;
+        var f = modulo.querySelector('[data-passo="' + n + '"] input:not([type="radio"])');
         if (f) f.focus({ preventScroll: true });
       }
+    };
+    var campo = function (n, id, msg) {
+      errore(n, msg);
+      document.getElementById(id).focus();
+      return false;
     };
     var valida = function (n) {
       errore(n, "");
       if (n === 1) {
-        var nome = document.getElementById("nz-o-nome");
-        var em = document.getElementById("nz-o-email");
-        if (!nome.value.trim()) {
-          errore(1, "Scrivi il tuo nome.");
-          nome.focus();
-          return false;
-        }
-        if (!em.value.trim() || !em.checkValidity()) {
-          errore(1, "Controlla l'email.");
-          em.focus();
-          return false;
-        }
+        if (val("nz-o-nome").length < 2) return campo(1, "nz-o-nome", "Scrivi il tuo nome.");
+        if (val("nz-o-cognome").length < 2) return campo(1, "nz-o-cognome", "Scrivi il tuo cognome.");
+        if (!val("nz-o-email") || !document.getElementById("nz-o-email").checkValidity()) return campo(1, "nz-o-email", "Controlla l'email.");
+        if (val("nz-o-tel") && !/^[+\d][\d\s().\-]{5,}$/.test(val("nz-o-tel"))) return campo(1, "nz-o-tel", "Controlla il numero di telefono.");
       }
       if (n === 2) {
-        var ind = document.getElementById("nz-o-ind");
-        if (ind.value.trim().length < 8) {
-          errore(2, "Indica l'indirizzo di spedizione completo.");
-          ind.focus();
-          return false;
-        }
+        var paese = val("nz-o-paese");
+        var cap4 = paese === "Austria" || paese === "Svizzera";
+        if (val("nz-o-ind").length < 5 || !/\d/.test(val("nz-o-ind"))) return campo(2, "nz-o-ind", "Indica via e numero civico.");
+        if (!(cap4 ? /^\d{4}$/ : /^\d{5}$/).test(val("nz-o-cap"))) return campo(2, "nz-o-cap", cap4 ? "Il CAP deve avere 4 cifre." : "Il CAP deve avere 5 cifre.");
+        if (val("nz-o-citta").length < 2) return campo(2, "nz-o-citta", "Scrivi la città.");
+        if (paese === "Italia" && !/^[A-Za-z]{2}$/.test(val("nz-o-prov"))) return campo(2, "nz-o-prov", "Indica la sigla della provincia (2 lettere).");
       }
       return true;
     };
@@ -401,16 +455,22 @@
       if (b.dataset.nav === "indietro") return prossimo(-1);
       if (valida(passo)) prossimo(1);
     });
+    modulo.addEventListener("change", function (ev) {
+      if (ev.target.name !== "nz-pay") return;
+      modulo.querySelectorAll(".nz-pay-o").forEach(function (o) {
+        o.classList.toggle("on", o.querySelector("input").checked);
+      });
+    });
     modulo.addEventListener("submit", function (ev) {
       ev.preventDefault();
       if (passo !== 3) {
-        if (valida(passo)) prossimo(1); // Invio nei campi = Avanti
+        if (valida(passo)) prossimo(1); // Invio nei campi = Continua
         return;
       }
       var daVal = serve() ? [1, 2] : [1];
       for (var i = 0; i < daVal.length; i++) {
         if (!valida(daVal[i])) {
-          vai(daVal[i]);
+          vai(daVal[i], true);
           valida(daVal[i]);
           return;
         }
@@ -418,56 +478,65 @@
       var c = leggi();
       var tot = 0;
       var voci = [];
-      var serveInd = serve();
       Object.keys(c).forEach(function (id) {
         if (!box[id] || !(c[id] > 0)) return;
         tot += box[id].prezzo * c[id];
         voci.push(box[id].nome + " x" + c[id]);
       });
       if (!voci.length) return;
-      var ind = document.getElementById("nz-o-ind").value.trim();
+      var m = metodo();
       var idOrd = Array.prototype.map
         .call(crypto.getRandomValues(new Uint8Array(4)), function (x) {
           return ("0" + x.toString(16)).slice(-2);
         })
         .join("")
         .toUpperCase();
-      var fatto = function () {
-        salva({});
-        concluso = true;
-        disegna();
-        badge(false);
-        modulo.reset();
-        var g = document.getElementById("nz-grazie");
-        g.textContent = "Richiesta ricevuta (n. " + idOrd + "). Nessun pagamento è stato effettuato: ti scriviamo noi all'email indicata per confermare l'ordine.";
-        g.hidden = false;
-        g.focus();
+      // errore di pagamento (smoke test): il carrello NON si svuota
+      var mostraErrore = function () {
+        esitoOrd.className = "nz-esito nz-esito-err";
+        esitoOrd.textContent = ERRORI[m] + " Nessun importo è stato addebitato (modalità test). Riprova o scegli un altro metodo di pagamento. Rif. " + idOrd;
+        esitoOrd.hidden = false;
         inviaOrd.disabled = false;
+        riepilogoOrd();
       };
-      // bot: campo trappola compilato o invio troppo veloce -> finto "ok", niente riga nel foglio
-      if (document.getElementById("nz-o-web").value || Date.now() - t0Ord < 3000) {
-        fatto();
+      // bot: campo trappola compilato o invio troppo veloce -> stesso errore, niente riga nel foglio
+      if (val("nz-o-web") || Date.now() - t0Ord < 3000) {
+        mostraErrore();
         return;
       }
       if (!tracker) {
+        esitoOrd.className = "nz-esito nz-esito-err";
         esitoOrd.textContent = "Modulo ordini non ancora attivo.";
+        esitoOrd.hidden = false;
         return;
       }
       inviaOrd.disabled = true;
-      esitoOrd.textContent = "Invio in corso...";
+      inviaOrd.textContent = "Elaborazione...";
+      esitoOrd.className = "nz-esito";
+      esitoOrd.textContent = "Elaborazione del pagamento in corso...";
+      esitoOrd.hidden = false;
+      var nota = val("nz-o-note");
       var q = new URLSearchParams({
         sito: location.hostname + location.pathname,
-        bottone: "ordine-completato",
+        bottone: "ordine-errore-pagamento-test",
         prodotto: sicuro(voci.join(", ") + " [#" + idOrd + "]").slice(0, 500),
         prezzo: String(tot / 100),
         browser: "smoke-test",
-        device: sicuro(document.getElementById("nz-o-email").value.slice(0, 150) + " | " + document.getElementById("nz-o-nome").value.slice(0, 100) + (serveInd ? " | " + ind.slice(0, 200) : " | digitale")),
+        device: sicuro(
+          [val("nz-o-email"), val("nz-o-nome") + " " + val("nz-o-cognome"), val("nz-o-tel") || "-", serve() ? indirizzo() : "digitale", "pagamento: " + PAGAMENTI[m], "esito: errore"]
+            .concat(nota ? ["note: " + nota] : [])
+            .join(" | ")
+        ).slice(0, 700),
       });
       fetch(tracker + (tracker.indexOf("?") < 0 ? "?" : "&") + q.toString(), { mode: "no-cors" })
-        .then(fatto)
+        .then(function () {
+          setTimeout(mostraErrore, 900); // un attimo di "elaborazione" prima dell'errore
+        })
         .catch(function () {
+          esitoOrd.className = "nz-esito nz-esito-err";
           esitoOrd.textContent = "Errore di rete. Riprova.";
           inviaOrd.disabled = false;
+          riepilogoOrd();
         });
     });
   }
