@@ -56,7 +56,6 @@ module BoxEcommerce
       corpo = prodotto['descrizione_completa'].to_s.strip.split(/\n+/).map { |r| "<p>#{e.(r)}</p>" }.join("\n")
       corpo = "<p>#{e.(prodotto['descrizione'])}</p>" if corpo.empty?
       tipo_txt = digitale ? 'Prodotto digitale' : 'Prodotto fisico'
-      nota = digitale ? 'Nessun indirizzo di spedizione: è un prodotto digitale.' : "All'ordine ti chiederemo l'indirizzo di spedizione."
       cat_link = categoria ? " &rsaquo; #{e.(categoria['nome'])}" : ''
       self.content = <<~HTML
         <div id="negozio" class="nz-pp" data-worker="#{e.(worker)}">
@@ -72,14 +71,10 @@ module BoxEcommerce
         <button type="button" class="btn btn-primary nz-add">Aggiungi al carrello</button>
         <span class="nz-ok" aria-live="polite"></span>
         </div>
-        <p class="nz-pp-nota">#{e.(nota)}</p>
         </div>
         </div>
         <section class="nz-pp-desc"><h2>Descrizione</h2>
         #{corpo}
-        </section>
-        <section class="nz-pp-det"><h2>Dettagli prodotto</h2>
-        <dl><dt>Categoria</dt><dd>#{e.(etichetta.empty? ? 'Nessuna' : etichetta)}</dd><dt>Tipo</dt><dd>#{e.(tipo_txt)}</dd><dt>Codice</dt><dd>#{e.(prodotto['id'])}</dd></dl>
         </section>
         <p class="nz-pp-torna"><a href="#{e.(base)}/negozio/">&larr; Torna al negozio</a> &middot; <a href="#{e.(base)}/carrello/">Vai al carrello</a></p>
         </div>
