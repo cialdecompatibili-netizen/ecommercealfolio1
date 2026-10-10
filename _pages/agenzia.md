@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Box
+title: Azienda
 nav: true
 nav_order: 0.4
 dropdown: true

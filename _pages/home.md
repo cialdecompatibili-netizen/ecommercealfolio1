@@ -17,8 +17,8 @@ latest_posts:
   enabled: true
   scrollable: true # adds a vertical scroll bar if there are more than 3 new posts items
   limit: 3 # leave blank to include all the blog posts
-seo_title: "{title} | Box ricorrenti in abbonamento"
-seo_description: "Box ricorrenti in abbonamento a casa tua. Dispensa italiana, caffè e tè, casa eco e benessere, con pausa o disdetta quando vuoi."
+seo_title: "{title} | Negozio online"
+seo_description: "Negozio online con prodotti per la casa, il benessere e la dispensa, più guide e ricettari digitali. Ordini in pochi passaggi."
 ---
 
 <style>
@@ -80,13 +80,13 @@ html[data-theme="dark"] .prj-home-more a{border-color:rgba(255,255,255,.3)}
 <!-- ===== MARTE END (html) ===== -->
 <canvas id="rete-cv" aria-hidden="true"></canvas>
 
-## Box ricorrenti, scelte per te e consegnate a casa.
+## Prodotti scelti per te, ordinati in pochi click.
 
-Scegli la tua box, decidi ogni quanto riceverla e lascia il resto a noi. Prodotti selezionati, spedizione in tutta Italia, pausa o disdetta quando vuoi.
+Sfoglia il negozio, aggiungi al carrello e concludi l'ordine in pochi passaggi, senza registrarti. Prodotti per la casa, il benessere e la dispensa, più guide e ricettari digitali.
 
-Puoi scegliere una box a sorpresa per scoprire cose nuove, oppure una box di ricarica con i prodotti che usi sempre. Per un regalo o per l'ufficio c'è l'abbonamento su misura.
+I prodotti fisici arrivano a casa tua e ti chiediamo l'indirizzo solo se ne hai nel carrello. Quelli digitali non hanno spedizione: nessun indirizzo da scrivere.
 
-**Vuoi provare una box?** Scrivici e ti consigliamo quella giusta per te, per un regalo o per il tuo team.
+**Hai una domanda?** Scrivici e ti rispondiamo entro un giorno.
 
 </div>
 

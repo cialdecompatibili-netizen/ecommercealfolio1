@@ -3,7 +3,7 @@ layout: page
 title: chi siamo
 nav: false
 permalink: /chi-siamo/
-description: Box ricorrenti in abbonamento con prodotti selezionati, ricariche per la casa, regali e box per le aziende.
+description: Negozio online di prodotti selezionati per la casa, il benessere e la dispensa, più guide e ricettari digitali.
 ---
 
 <style>
@@ -41,19 +41,19 @@ html[data-theme="dark"] .cs-num div,html[data-theme="dark"] .cs-card,html[data-t
 
 <div class="cs-hero">
   <span class="cs-eyebrow">Chi siamo</span>
-  <h2>Box ricorrenti, pensate per stare comode nella tua vita.</h2>
-  <p>Selezioniamo prodotti, li impacchettiamo e li spediamo con il ritmo che scegli tu. Una box a sorpresa per scoprire, una di ricarica per non restare mai senza.</p>
+  <h2>Pochi click per ricevere ciò che ti serve.</h2>
+  <p>Selezioniamo prodotti utili, fisici e digitali, e rendiamo l'acquisto il più semplice possibile: carrello, pochi dati e conferma. Nessuna registrazione obbligatoria.</p>
   <div class="cs-cta">
-<a class="cs-btn pri" href="{{ '/contatti/' | relative_url }}">Attiva una box</a>
-<a class="cs-btn" href="{{ '/servizi/' | relative_url }}">Scopri le box</a>
+<a class="cs-btn pri" href="{{ '/contatti/' | relative_url }}">Scrivici</a>
+<a class="cs-btn" href="{{ '/negozio/' | relative_url }}">Vai al negozio</a>
   </div>
 </div>
 
 <div class="cs-final">
-  <h2>Vuoi provare una box?</h2>
-  <p>Scrivici e ti aiutiamo a scegliere quella giusta, per te, per un regalo o per il tuo team.</p>
+  <h2>Hai bisogno di un consiglio?</h2>
+  <p>Scrivici e ti aiutiamo a scegliere il prodotto giusto, per te o per un regalo.</p>
   <div class="cs-cta">
-<a class="cs-btn pri" href="{{ '/contatti/' | relative_url }}">Attiva una box</a>
-<a class="cs-btn" href="{{ '/servizi/' | relative_url }}">Scopri le box</a>
+<a class="cs-btn pri" href="{{ '/contatti/' | relative_url }}">Scrivici</a>
+<a class="cs-btn" href="{{ '/negozio/' | relative_url }}">Vai al negozio</a>
   </div>
 </div>
