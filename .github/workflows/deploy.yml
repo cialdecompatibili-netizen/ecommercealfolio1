@@ -7,6 +7,7 @@ on:
       - main
     paths:
       - "_data/catalogo.json"
+      - "_plugins/**"
       - "assets/**"
       - "**.bib"
       - "**.html"
