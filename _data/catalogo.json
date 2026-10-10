@@ -1,16 +1,11 @@
 {
  "_nota": "PRODOTTI DI PROVA (demo). Fonte UNICA: la leggono /negozio/, le pagine prodotto (_plugins/ecommerce.rb), il carrello nel menu (_includes/header.liquid) e l'admin (E-commerce). prezzo_centesimi = euro x 100. tipo = fisico (l'ordine chiede l'indirizzo di spedizione) oppure digitale (nessun indirizzo); tipo mancante = fisico. visibile=false nasconde il prodotto (niente pagina, niente acquisto).",
  "categorie": [
-  {"id":"casa","nome":"Casa e benessere","icona":"🌿"},
   {"id":"digitale","nome":"Prodotti digitali","icona":"💾"},
+  {"id":"casa","nome":"Casa e benessere","icona":"🌿"},
   {"id":"regali","nome":"Regali","icona":"🎁"}
  ],
- "prodotti": [
-  {"id":"casa-eco","nome":"Kit Casa Eco","descrizione":"Detersivi e prodotti per la casa a ricarica.","categoria":"casa","icona":"🌿","tipo":"fisico","prezzo_centesimi":3200,"visibile":true},
-  {"id":"benessere","nome":"Set Benessere","descrizione":"Cura del corpo e relax, con novità da provare.","categoria":"casa","icona":"🧴","tipo":"fisico","prezzo_centesimi":3500,"visibile":true},
-  {"id":"dispensa-italiana","nome":"Dispensa Italiana","descrizione":"Prodotti artigianali italiani scelti da noi.","categoria":"regali","icona":"🍝","tipo":"fisico","prezzo_centesimi":2900,"visibile":true},
-  {"id":"caffe-e-te","nome":"Caffè e Tè","descrizione":"Caffè e tè freschi, per non restare mai senza.","categoria":"regali","icona":"☕","tipo":"fisico","prezzo_centesimi":2400,"visibile":true},
-  {"id":"guida-casa-eco","nome":"Guida Casa Eco (PDF)","descrizione":"Guida digitale: come ridurre sprechi e plastica in casa.","categoria":"digitale","icona":"📘","tipo":"digitale","prezzo_centesimi":900,"visibile":true},
-  {"id":"ricettario-digitale","nome":"Ricettario digitale","descrizione":"Cento ricette di stagione in formato digitale.","categoria":"digitale","icona":"📖","tipo":"digitale","prezzo_centesimi":1200,"visibile":true}
+ "box": [
+
  ]
 }
