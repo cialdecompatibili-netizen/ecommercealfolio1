@@ -216,3 +216,94 @@
 #nz-carrello-pag .nz-b-vai { --c: #1f9d55; background: var(--c); color: #fff; }
 #nz-carrello-pag .nz-b-vai:hover, #nz-carrello-pag .nz-b-vai:focus-visible { background: #17803f; border-color: #17803f; }
 @media (max-width: 575.98px) { #nz-carrello-pag .nz-b { flex: 1 1 100%; } }
+
+/* ===== ORDINE (/ordine/): due colonne (form a passi + riepilogo fisso), passi a cerchietti, campi moderni, metodi di pagamento, bottoni come il carrello.
+   Tutto scoped su #nz-ordine-pag. Il JS (carrello.js) usa gli id nz-o-*, .nz-passo, .nz-steps li, [data-nav], .nz-pay-o, #nz-riep-dati, #nz-sum-*: non cambiarli. */
+#nz-ordine-pag { --g: #1f9d55; --gh: #17803f; --r: #c62828; }
+#nz-ordine-pag .nz-steps { display: flex; align-items: center; gap: 0; list-style: none; margin: 0 0 2rem; padding: 0; border: 0; }
+#nz-ordine-pag .nz-steps li { display: flex; align-items: center; gap: .6rem; flex: 0 0 auto; margin: 0; padding: 0; border: 0; opacity: 1; color: var(--nz-muto); font-weight: 500; font-size: .95rem; }
+#nz-ordine-pag .nz-steps li[hidden] { display: none; }
+#nz-ordine-pag .nz-steps li:not([hidden]) ~ li:not([hidden]) { flex: 1 1 auto; }
+#nz-ordine-pag .nz-steps li:not([hidden]) ~ li:not([hidden])::before { content: ""; flex: 1 1 auto; min-width: 1.5rem; height: 2px; margin-right: .75rem; border-radius: 2px; background: var(--nz-bordo); }
+#nz-ordine-pag .nz-steps li:not([hidden]) ~ li.on::before, #nz-ordine-pag .nz-steps li:not([hidden]) ~ li.fatto::before { background: var(--g); }
+#nz-ordine-pag .nz-steps .nz-sn { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 2rem; height: 2rem; border: 2px solid var(--nz-bordo); border-radius: 50%; font-size: .85rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+#nz-ordine-pag .nz-steps li.on { color: var(--nz-testo); }
+#nz-ordine-pag .nz-steps li.on .nz-sn { background: var(--g); border-color: var(--g); color: #fff; }
+#nz-ordine-pag .nz-steps li.fatto { color: var(--nz-testo); }
+#nz-ordine-pag .nz-steps li.fatto .nz-sn { border-color: var(--g); color: var(--g); font-size: 0; }
+#nz-ordine-pag .nz-steps li.fatto .nz-sn::before { content: "\2713"; font-size: 1rem; }
+@media (max-width: 575.98px) { #nz-ordine-pag .nz-steps .nz-sl { display: none; } #nz-ordine-pag .nz-steps li.on .nz-sl { display: inline; } }
+
+#nz-ordine-pag .nz-ord-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem; align-items: start; }
+@media (min-width: 820px) {
+  #nz-ordine-pag .nz-ord-grid { grid-template-columns: minmax(0, 1fr) 19rem; gap: 2.5rem; }
+  #nz-ordine-pag .nz-ord-sum { position: sticky; top: 5.5rem; }
+}
+#nz-ordine-pag .nz-h { font-size: 1.35rem; margin: 0 0 .25rem; }
+#nz-ordine-pag .nz-sub { color: var(--nz-muto); margin: 0 0 1.5rem; }
+#nz-ordine-pag .nz-h2 { font-size: 1rem; font-weight: 600; padding: 0; margin: 0 0 .75rem; }
+
+#nz-ordine-pag .nz-f { margin: 0 0 1rem; }
+#nz-ordine-pag .nz-f label { display: block; margin: 0 0 .35rem; font-size: .85rem; font-weight: 500; }
+#nz-ordine-pag .nz-opz { font-weight: 400; color: var(--nz-muto); }
+#nz-ordine-pag .nz-f input, #nz-ordine-pag .nz-f select, #nz-ordine-pag .nz-f textarea { display: block; width: 100%; padding: 0 1rem; font-size: 1rem; color: var(--nz-testo); background: var(--nz-sfondo); border: 1.5px solid var(--nz-bordo); border-radius: 12px; box-shadow: none; transition: border-color .15s, box-shadow .15s; }
+#nz-ordine-pag .nz-f input, #nz-ordine-pag .nz-f select { height: 3rem; }
+#nz-ordine-pag .nz-f textarea { padding: .75rem 1rem; resize: vertical; min-height: 4.5rem; }
+#nz-ordine-pag .nz-f input:hover, #nz-ordine-pag .nz-f select:hover, #nz-ordine-pag .nz-f textarea:hover { border-color: color-mix(in srgb, var(--nz-tema) 55%, var(--nz-bordo)); }
+#nz-ordine-pag .nz-f input:focus, #nz-ordine-pag .nz-f select:focus, #nz-ordine-pag .nz-f textarea:focus { outline: none; border-color: var(--nz-tema); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nz-tema) 20%, transparent); }
+#nz-ordine-pag .nz-f-row { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 1rem; }
+@media (min-width: 576px) {
+  #nz-ordine-pag .nz-f-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #nz-ordine-pag .nz-f-row.nz-r3 { grid-template-columns: 8rem minmax(0, 1fr) 7rem; }
+}
+#nz-ordine-pag .nz-err { margin: 0 0 1rem; padding: .6rem .9rem; border-radius: 10px; color: var(--r); background: color-mix(in srgb, var(--r) 8%, var(--nz-sfondo)); font-size: .92rem; }
+#nz-ordine-pag .nz-err:empty { display: none; }
+
+/* Metodi di pagamento */
+#nz-ordine-pag .nz-pay { border: 0; padding: 0; margin: 0 0 1.5rem; min-width: 0; }
+#nz-ordine-pag .nz-pay-o { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .1rem .85rem; align-items: center; margin: 0 0 .6rem; padding: .85rem 1rem; border: 1.5px solid var(--nz-bordo); border-radius: 12px; cursor: pointer; transition: border-color .15s, background-color .15s, box-shadow .15s; }
+#nz-ordine-pag .nz-pay-o:hover { border-color: color-mix(in srgb, var(--g) 55%, var(--nz-bordo)); }
+#nz-ordine-pag .nz-pay-o input { grid-row: 1 / 3; width: 1.15rem; height: 1.15rem; margin: 0; accent-color: var(--g); }
+#nz-ordine-pag .nz-pay-t { font-weight: 500; }
+#nz-ordine-pag .nz-pay-d { grid-column: 2; font-size: .85rem; color: var(--nz-muto); }
+#nz-ordine-pag .nz-pay-o.on { border-color: var(--g); background: color-mix(in srgb, var(--g) 6%, var(--nz-sfondo)); box-shadow: 0 0 0 1px var(--g); }
+#nz-ordine-pag .nz-pay-o:focus-within { outline: 2px solid color-mix(in srgb, var(--g) 45%, transparent); outline-offset: 2px; }
+
+/* Riepilogo dati (passo 3), esito, nota legale */
+#nz-ordine-pag .nz-recap { border: 1px solid var(--nz-bordo); border-radius: 12px; padding: .15rem 1rem; margin: 0 0 1.5rem; }
+#nz-ordine-pag .nz-recap-r { display: flex; gap: 1rem; padding: .75rem 0; }
+#nz-ordine-pag .nz-recap-r + .nz-recap-r { border-top: 1px solid var(--nz-bordo); }
+#nz-ordine-pag .nz-recap-k { flex: 0 0 6.5rem; color: var(--nz-muto); font-size: .85rem; padding-top: .1rem; }
+#nz-ordine-pag .nz-recap-v { min-width: 0; overflow-wrap: anywhere; }
+#nz-ordine-pag .nz-esito { margin: 0 0 1rem; padding: .85rem 1rem; border: 1px solid var(--nz-bordo); border-radius: 12px; font-size: .95rem; }
+#nz-ordine-pag .nz-esito[hidden] { display: none; }
+#nz-ordine-pag .nz-esito-err { border-color: var(--r); color: var(--r); background: color-mix(in srgb, var(--r) 8%, var(--nz-sfondo)); }
+#nz-ordine-pag .nz-legale { margin: 0 0 .25rem; color: var(--nz-muto); font-size: .82rem; }
+
+/* Riepilogo ordine a lato */
+#nz-ordine-pag .nz-ord-sum { padding: 1.25rem; border: 1px solid var(--nz-bordo); border-radius: 16px; background: color-mix(in srgb, var(--nz-tema) 4%, var(--nz-sfondo)); }
+#nz-ordine-pag .nz-sum-t { margin: 0 0 .5rem; font-size: 1.05rem; font-weight: 600; }
+#nz-ordine-pag .nz-sum-righe { list-style: none; margin: 0; padding: 0; }
+#nz-ordine-pag .nz-sum-righe li { display: flex; justify-content: space-between; gap: 1rem; padding: .65rem 0; border-bottom: 1px solid var(--nz-bordo); font-size: .95rem; }
+#nz-ordine-pag .nz-sum-n { display: flex; flex-direction: column; min-width: 0; }
+#nz-ordine-pag .nz-sum-n small { color: var(--nz-muto); }
+#nz-ordine-pag .nz-sum-righe li > span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+#nz-ordine-pag .nz-sum-tot { display: flex; justify-content: space-between; align-items: baseline; margin: .9rem 0 1rem; font-size: 1.05rem; }
+#nz-ordine-pag .nz-sum-tot strong { font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+#nz-ordine-pag .nz-sum-fiducia { list-style: none; margin: 0; padding: 0; color: var(--nz-muto); font-size: .85rem; }
+#nz-ordine-pag .nz-sum-fiducia li { padding: .15rem 0; }
+#nz-ordine-pag .nz-sum-fiducia li::before { content: "\2713"; color: var(--g); margin-right: .5rem; font-weight: 700; }
+
+/* Bottoni (stessa forma di quelli del carrello): Continua/Paga verde pieno, Indietro neutro con contorno */
+#nz-ordine-pag .nz-az-ord { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+#nz-ordine-pag .nz-b { display: inline-flex; align-items: center; justify-content: center; height: 3rem; padding: 0 1.75rem; margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: .01em; text-decoration: none; border: 2px solid var(--nz-bordo); border-radius: 999px; background: transparent; color: var(--nz-testo); box-shadow: none; cursor: pointer; transition: background-color .15s, color .15s, border-color .15s, box-shadow .15s; }
+#nz-ordine-pag .nz-b:hover { border-color: var(--nz-testo); text-decoration: none; }
+#nz-ordine-pag .nz-b-vai { background: var(--g); border-color: var(--g); color: #fff; }
+#nz-ordine-pag .nz-b-vai:hover, #nz-ordine-pag .nz-b-vai:focus-visible { background: var(--gh); border-color: var(--gh); color: #fff; }
+#nz-ordine-pag .nz-b:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--g) 30%, transparent); }
+#nz-ordine-pag .nz-b:active { transform: translateY(1px); }
+#nz-ordine-pag .nz-b[disabled] { opacity: .6; cursor: default; }
+@media (max-width: 575.98px) {
+  #nz-ordine-pag .nz-az-ord { flex-direction: column-reverse; align-items: stretch; }
+  #nz-ordine-pag .nz-b { width: 100%; }
+}
