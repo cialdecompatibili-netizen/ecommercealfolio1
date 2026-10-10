@@ -122,10 +122,18 @@
 .nz-pp-badge { display: inline-block; font-size: .8rem; padding: .2rem .7rem; border: 1px solid var(--nz-bordo); border-radius: 999px; color: var(--nz-muto); margin: 0 0 .75rem; }
 .nz-pp-prezzo { font-size: 2rem; line-height: 1.1; margin: 0 0 1rem; }
 .nz-pp-breve { font-size: 1.05rem; margin-bottom: 1.5rem; }
-.nz-pp-acq { display: flex; gap: .75rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1rem; }
-.nz-pp-acq label { margin: 0; font-size: .8rem; }
-.nz-pp-acq .nz-qta { width: 4.5rem; }
-.nz-pp-acq .nz-add { flex: 1 1 12rem; padding: .7rem 1.25rem; font-size: 1.05rem; }
+/* Acquisto: quantita' e bottone sulla stessa riga, stessa altezza, entrambi "pillola" leggeri. Bottone con solo contorno (si riempie al passaggio del mouse). */
+#negozio .nz-pp-acq { --nz-h: 3rem; display: flex; gap: .75rem; align-items: flex-end; flex-wrap: wrap; margin-bottom: 1.25rem; }
+#negozio .nz-pp-acq label { display: flex; flex-direction: column; gap: .3rem; margin: 0; font-size: .75rem; letter-spacing: .02em; color: var(--nz-muto); }
+#negozio .nz-pp-acq .nz-qta { width: 5rem; height: var(--nz-h); padding: 0 .5rem; text-align: center; font-size: 1.05rem; color: var(--nz-testo); background: transparent; border: 1.5px solid var(--nz-bordo); border-radius: 999px; box-shadow: none; -moz-appearance: textfield; appearance: textfield; transition: border-color .15s, box-shadow .15s; }
+#negozio .nz-pp-acq .nz-qta::-webkit-outer-spin-button, #negozio .nz-pp-acq .nz-qta::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+#negozio .nz-pp-acq .nz-qta:hover { border-color: var(--nz-tema); }
+#negozio .nz-pp-acq .nz-qta:focus { outline: none; border-color: var(--nz-tema); box-shadow: 0 0 0 3px color-mix(in srgb, var(--nz-tema) 20%, transparent); }
+#negozio .nz-pp-acq .nz-add { flex: 1 1 12rem; height: var(--nz-h); padding: 0 1.5rem; font-size: 1rem; font-weight: 500; letter-spacing: .01em; color: var(--nz-tema); background: transparent; border: 1.5px solid var(--nz-tema); border-radius: 999px; box-shadow: none; transition: background-color .15s, color .15s, box-shadow .15s; }
+#negozio .nz-pp-acq .nz-add:hover { background: var(--nz-tema); color: #fff; }
+#negozio .nz-pp-acq .nz-add:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--nz-tema) 25%, transparent); }
+#negozio .nz-pp-acq .nz-add:active { transform: translateY(1px); }
+#negozio .nz-pp-acq .nz-ok { flex: 1 0 100%; align-self: auto; }
 .nz-pp-nota { color: var(--nz-muto); font-size: .9rem; margin: 0; }
 .nz-pp-desc, .nz-pp-det { max-width: 760px; margin-top: 2.5rem; padding-top: 1.5rem; border-top: 1px solid var(--nz-bordo); }
 .nz-pp-desc h2, .nz-pp-det h2 { font-size: 1.25rem; margin-bottom: 1rem; }
