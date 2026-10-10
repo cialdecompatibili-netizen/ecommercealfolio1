@@ -91,3 +91,17 @@
 @media (hover: hover) and (min-width: 576px) {
   .nz-cartw:hover .nz-prev:not(:empty), .nz-cartw:focus-within .nz-prev:not(:empty) { display: block; }
 }
+
+/* Carrello (/carrello/) e ordine a passi (/ordine/). Passo 2 (spedizione) compare solo con prodotti fisici (carrello.js). */
+.nz-steps { display: flex; gap: 1.5rem; list-style: none; padding: 0; margin: 0 0 1.5rem; border-bottom: 1px solid var(--nz-bordo); }
+.nz-steps li { padding: .6rem 0; opacity: .55; border-bottom: 2px solid transparent; margin-bottom: -1px; }
+.nz-steps li.on { opacity: 1; font-weight: 600; border-bottom-color: currentColor; }
+.nz-steps li.fatto { opacity: .85; }
+.nz-steps li.fatto .nz-sn::before { content: "\2713  "; }
+.nz-steps li[hidden], .nz-passo[hidden] { display: none; }
+.nz-passo { max-width: 480px; }
+.nz-err { color: #b3261e; min-height: 1.3em; margin: .25rem 0 .75rem; }
+.nz-az-passo { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.nz-riep { list-style: none; margin: 0 0 .75rem; padding: 0; }
+.nz-riep li { display: flex; justify-content: space-between; gap: 1rem; padding: .3rem 0; border-bottom: 1px solid var(--nz-bordo); }
+.nz-vai { margin-top: 1.5rem; }
