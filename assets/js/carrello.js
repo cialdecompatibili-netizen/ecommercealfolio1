@@ -8,12 +8,14 @@
 // 3) Su /grazie/ il carrello viene svuotato (pagamento completato).
 // 4) SMOKE TEST: niente pagamento e niente Worker. 'Invia richiesta d'ordine' scrive una riga nel foglio Google (ordini.tracker in _config.yml).
 // 5) La finestra "aggiunto" e' un <dialog> nativo creato qui (testi con textContent, mai innerHTML: i nomi arrivano da data-*). Gli stili sono in negozio.css.
+// 7) PRODOTTI FISICI/DIGITALI: data-tipo (fisico|digitale, mancante = fisico). Il campo indirizzo (#nz-o-ind) compare e viene richiesto solo se nel carrello c'e'
+//    almeno un prodotto fisico; finisce nella colonna device del foglio ("email | nome | indirizzo", oppure "| digitale"). Nessun abbonamento.
 // 6) Le pagine prodotto non hanno la tabella carrello (#nz-righe): disegna() esce subito, il contatore e la finestra funzionano lo stesso.
 (function () {
   if (window.__nzCarrello) return;
   window.__nzCarrello = true;
 
-  var KEY = "box_carrello";
+  var KEY = "nz_carrello";
   var MAX = 20;
   var euro = new Intl.NumberFormat("it-IT", { style: "currency", currency: "EUR" });
 
@@ -120,9 +122,9 @@
   var box = {};
   radice.querySelectorAll(".nz-box").forEach(function (c) {
     var prezzo = Number(c.dataset.prezzo);
-    box[c.dataset.id] = { nome: c.dataset.nome, prezzo: prezzo, periodo: c.dataset.periodo || "" };
+    box[c.dataset.id] = { nome: c.dataset.nome, prezzo: prezzo, fisico: c.dataset.tipo !== "digitale" }; // tipo mancante = fisico
     prezzi[c.dataset.id] = prezzo;
-    c.querySelector(".nz-prezzo").textContent = euro.format(prezzo / 100) + " " + (c.dataset.periodo || "");
+    c.querySelector(".nz-prezzo").textContent = euro.format(prezzo / 100);
   });
 
   /* ---------- carrello completo (solo /negozio/) ---------- */
@@ -160,6 +162,9 @@
     document.getElementById("nz-pieno").hidden = ids.length === 0;
     document.getElementById("nz-totale").textContent = euro.format(tot / 100);
     document.getElementById("nz-conta").textContent = n ? "(" + n + ")" : "";
+    // indirizzo di spedizione SOLO se nel carrello c'e' almeno un prodotto fisico (filosofia meno click, CLAUDE.md punto 38)
+    var indW = document.getElementById("nz-o-ind-w");
+    if (indW) indW.style.display = ids.some(function (id) { return box[id].fisico; }) ? "" : "none";
     var paga = document.getElementById("nz-paga");
     var tr = radice.dataset.tracker;
     paga.disabled = !tr;
@@ -192,7 +197,7 @@
     h.id = "nz-dlg-tit";
     var pr = el("div", undefined, "nz-dlg-prod");
     pr.appendChild(el("strong", p.nome));
-    pr.appendChild(el("span", euro.format(p.prezzo / 100) + " " + p.periodo));
+    pr.appendChild(el("span", euro.format(p.prezzo / 100)));
     pr.appendChild(el("span", aggiunta ? "Quantità aggiunta: " + aggiunta : "Quantità massima raggiunta (" + MAX + ")"));
     var tt = el("div", undefined, "nz-dlg-tot");
     tt.appendChild(el("p", r.n === 1 ? "Nel carrello c\u2019è 1 prodotto" : "Nel carrello ci sono " + r.n + " prodotti"));
@@ -300,12 +305,20 @@
       var c = leggi();
       var tot = 0;
       var voci = [];
+      var serveInd = false;
       Object.keys(c).forEach(function (id) {
         if (!box[id] || !(c[id] > 0)) return;
         tot += box[id].prezzo * c[id];
         voci.push(box[id].nome + " x" + c[id]);
+        if (box[id].fisico) serveInd = true;
       });
       if (!voci.length) return;
+      var ind = document.getElementById("nz-o-ind").value.trim();
+      if (serveInd && ind.length < 8) {
+        mostraOrd("Indica l'indirizzo di spedizione.", false);
+        document.getElementById("nz-o-ind").focus();
+        return;
+      }
       var idOrd = Array.prototype.map
         .call(crypto.getRandomValues(new Uint8Array(4)), function (x) {
           return ("0" + x.toString(16)).slice(-2);
@@ -342,7 +355,7 @@
         prodotto: sicuro(voci.join(", ") + " [#" + idOrd + "]").slice(0, 500),
         prezzo: String(tot / 100),
         browser: "smoke-test",
-        device: sicuro(document.getElementById("nz-o-email").value.slice(0, 150) + " | " + document.getElementById("nz-o-nome").value.slice(0, 100)),
+        device: sicuro(document.getElementById("nz-o-email").value.slice(0, 150) + " | " + document.getElementById("nz-o-nome").value.slice(0, 100) + (serveInd ? " | " + ind.slice(0, 200) : " | digitale")),
       });
       fetch(tracker + (tracker.indexOf("?") < 0 ? "?" : "&") + q.toString(), { mode: "no-cors" })
         .then(fatto)

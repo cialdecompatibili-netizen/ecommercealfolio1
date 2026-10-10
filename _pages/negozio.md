@@ -2,7 +2,7 @@
 layout: page
 title: Negozio
 permalink: /negozio/
-description: Scegli le tue box, indica la quantità e aggiungile al carrello.
+description: Scegli i prodotti, indica la quantità e aggiungili al carrello.
 nav: true
 nav_order: 1
 ecommerce: true
@@ -15,13 +15,13 @@ ecommerce: true
 {% endfor %}
 </div>
 <div class="nz-lista">
-{% for b in site.data.catalogo.box %}
+{% for b in site.data.catalogo.prodotti %}
 {% if b.visibile == false %}{% continue %}{% endif %}
 {% assign cat = site.data.catalogo.categorie | where: 'id', b.categoria | first %}
-<div class="nz-riga nz-box" data-id="{{ b.id }}" data-cat="{{ b.categoria }}" data-nome="{{ b.nome | escape }}" data-prezzo="{{ b.prezzo_centesimi }}" data-tipo="{{ b.tipo }}" data-periodo="{% if b.tipo == 'abbonamento' %}{% if b.ogni > 1 %}ogni {{ b.ogni }} {% case b.intervallo %}{% when 'week' %}settimane{% when 'year' %}anni{% else %}mesi{% endcase %}{% else %}/ {% case b.intervallo %}{% when 'week' %}settimana{% when 'year' %}anno{% else %}mese{% endcase %}{% endif %}{% endif %}">
+<div class="nz-riga nz-box" data-id="{{ b.id }}" data-cat="{{ b.categoria }}" data-nome="{{ b.nome | escape }}" data-prezzo="{{ b.prezzo_centesimi }}" data-tipo="{{ b.tipo | default: 'fisico' }}">
 <div class="nz-icona">{{ b.icona }}</div>
 <div class="nz-testo">
-<p class="nz-cat">{{ cat.nome }}{% if b.tipo == 'abbonamento' %} · abbonamento{% else %} · acquisto singolo{% endif %}</p>
+<p class="nz-cat">{{ cat.nome }} · {% if b.tipo == 'digitale' %}digitale{% else %}fisico{% endif %}</p>
 <h3><a href="{{ '/negozio/' | append: b.id | append: '/' | relative_url }}">{{ b.nome }}</a></h3>
 <p>{{ b.descrizione }}</p>
 </div>
@@ -39,7 +39,7 @@ ecommerce: true
 <p id="nz-grazie" class="nz-grazie fw-bold" role="status" tabindex="-1" hidden></p>
 <div id="nz-pieno" hidden>
 <table class="nz-tab">
-<thead><tr><th>Box</th><th>Quantità</th><th>Totale</th><th></th></tr></thead>
+<thead><tr><th>Prodotto</th><th>Quantità</th><th>Totale</th><th></th></tr></thead>
 <tbody id="nz-righe"></tbody>
 </table>
 <p>Totale <span id="nz-totale" class="nz-totale"></span></p>
@@ -51,6 +51,7 @@ ecommerce: true
 <p class="text-muted">Nessun pagamento adesso: ti scriviamo noi per confermare l'ordine.</p>
 <label class="d-block mb-3">Nome<input type="text" class="form-control" id="nz-o-nome" maxlength="100" required autocomplete="name"></label>
 <label class="d-block mb-3">Email<input type="email" class="form-control" id="nz-o-email" maxlength="150" required autocomplete="email"></label>
+<div id="nz-o-ind-w" style="display:none"><label class="d-block mb-3">Indirizzo di spedizione<input type="text" class="form-control" id="nz-o-ind" maxlength="200" autocomplete="street-address" placeholder="Via, numero, CAP, città"></label></div>
 <div style="position:absolute;left:-9999px;height:0;overflow:hidden" aria-hidden="true"><label for="nz-o-web">Non compilare</label><input type="text" id="nz-o-web" tabindex="-1" autocomplete="off"></div>
 <button type="submit" class="btn btn-primary" id="nz-o-invia">Conferma richiesta</button>
 <p id="nz-o-esito" class="mt-2" role="status" aria-live="polite"></p>

@@ -18,12 +18,9 @@ module BoxEcommerce
     site.config['ecommerce'] == true
   end
 
-  def self.periodo(prodotto)
-    return '' unless prodotto['tipo'] == 'abbonamento'
-
-    ogni = (prodotto['ogni'] || 1).to_i
-    nomi = { 'week' => %w[settimana settimane], 'year' => %w[anno anni] }.fetch(prodotto['intervallo'], %w[mese mesi])
-    ogni > 1 ? "ogni #{ogni} #{nomi[1]}" : "/ #{nomi[0]}"
+  # Nessun abbonamento: i prodotti sono fisici o digitali (campo tipo; mancante = fisico). Il periodo resta vuoto.
+  def self.periodo(_prodotto)
+    ''
   end
 
   class PaginaProdotto < Jekyll::PageWithoutAFile
@@ -42,7 +39,7 @@ module BoxEcommerce
       etichetta = categoria ? "#{categoria['icona']} #{categoria['nome']}" : ''
       self.content = <<~HTML
         <div id="negozio" data-worker="#{e.(worker)}">
-        <div class="nz-riga nz-box nz-scheda" data-id="#{e.(prodotto['id'])}" data-nome="#{e.(prodotto['nome'])}" data-prezzo="#{prodotto['prezzo_centesimi'].to_i}" data-tipo="#{e.(prodotto['tipo'])}" data-periodo="#{e.(BoxEcommerce.periodo(prodotto))}">
+        <div class="nz-riga nz-box nz-scheda" data-id="#{e.(prodotto['id'])}" data-nome="#{e.(prodotto['nome'])}" data-prezzo="#{prodotto['prezzo_centesimi'].to_i}" data-tipo="#{e.(prodotto['tipo'] || 'fisico')}" data-periodo="#{e.(BoxEcommerce.periodo(prodotto))}">
         <div class="nz-icona">#{e.(prodotto['icona'])}</div>
         <div class="nz-testo">
         <p class="nz-cat">#{e.(etichetta)}</p>
@@ -70,7 +67,7 @@ module BoxEcommerce
 
       catalogo = site.data['catalogo'] || {}
       cats = (catalogo['categorie'] || []).each_with_object({}) { |c, h| h[c['id']] = c }
-      (catalogo['box'] || []).each do |p|
+      (catalogo['prodotti'] || []).each do |p|
         next if p['visibile'] == false
         next unless p['id'].to_s.match?(/\A[a-z0-9-]+\z/)
 
