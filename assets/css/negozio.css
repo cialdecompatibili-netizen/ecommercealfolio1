@@ -76,11 +76,27 @@
 .nz-dlg h2 { margin: 0 2rem .9rem 0; font-size: 1.15rem; color: var(--nz-tema); }
 .nz-x { position: absolute; top: .45rem; right: .6rem; border: 0; background: transparent; font-size: 1.7rem; line-height: 1; color: var(--nz-muto); cursor: pointer; }
 .nz-x:hover { color: var(--nz-testo); }
-.nz-dlg-prod { display: flex; flex-direction: column; gap: .15rem; padding-bottom: .8rem; margin-bottom: .8rem; border-bottom: 1px solid var(--nz-bordo); }
-.nz-dlg-prod span { color: var(--nz-muto); font-size: .9rem; }
+.nz-dlg-prod { display: flex; flex-direction: row; align-items: center; gap: .9rem; padding-bottom: .9rem; margin-bottom: .9rem; border-bottom: 1px solid var(--nz-bordo); }
+.nz-dlg-i { flex: 0 0 4rem; width: 4rem; height: 4rem; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--nz-bordo); border-radius: 12px; font-size: 1.9rem; background: color-mix(in srgb, var(--nz-tema) 6%, var(--nz-sfondo)); }
+.nz-dlg-i img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.nz-dlg-t { display: flex; flex-direction: column; gap: .15rem; min-width: 0; }
+.nz-dlg-t strong { overflow-wrap: anywhere; }
+.nz-dlg-t span { color: var(--nz-muto); font-size: .9rem; }
 .nz-dlg-tot p { margin: 0 0 .2rem; }
 .nz-dlg .nz-totale { font-size: 1.25rem; font-weight: 700; }
-.nz-dlg-az { display: flex; flex-wrap: wrap; gap: .5rem; justify-content: flex-end; margin-top: 1rem; }
+.nz-dlg-az { display: flex; flex-wrap: wrap; gap: .75rem; justify-content: flex-end; margin-top: 1.25rem; }
+/* Bottoni della finestra (come quelli del carrello): Continua lo shopping arancio con contorno, Vai al carrello verde pieno (azione principale) */
+.nz-db { --c: var(--nz-tema); display: inline-flex; align-items: center; justify-content: center; height: 3rem; padding: 0 1.5rem; margin: 0; font-size: 1rem; font-weight: 500; letter-spacing: .01em; text-decoration: none; color: var(--c); background: transparent; border: 2px solid var(--c); border-radius: 999px; box-shadow: none; cursor: pointer; transition: background-color .15s, color .15s, box-shadow .15s; }
+.nz-db:hover, .nz-db:focus-visible { background: var(--c); color: #fff; text-decoration: none; }
+.nz-db:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--c) 30%, transparent); }
+.nz-db:active { transform: translateY(1px); }
+.nz-db-continua { --c: #e8730c; }
+.nz-db-vai { --c: #1f9d55; background: var(--c); color: #fff; }
+.nz-db-vai:hover, .nz-db-vai:focus-visible { background: #17803f; border-color: #17803f; color: #fff; }
+@media (max-width: 575.98px) {
+  .nz-dlg-az { flex-direction: column-reverse; align-items: stretch; flex-wrap: nowrap; }
+  .nz-db { width: 100%; }
+}
 
 /* Anteprima al passaggio del mouse (.nz-prev, come .blockcart .body di PrestaShop). Solo con mouse (hover:hover) e da 576px; su touch il tap va alla pagina carrello.
    Vuota (carrello a zero) = nessun contenuto, quindi non compare nemmeno il riquadro. */

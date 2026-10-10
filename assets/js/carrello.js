@@ -276,17 +276,30 @@
     var h = el("h2", "\u2713 Prodotto aggiunto al carrello");
     h.id = "nz-dlg-tit";
     var pr = el("div", undefined, "nz-dlg-prod");
-    pr.appendChild(el("strong", p.nome));
-    pr.appendChild(el("span", euro.format(p.prezzo / 100)));
-    pr.appendChild(el("span", aggiunta ? "Quantità aggiunta: " + aggiunta : "Quantità massima raggiunta (" + MAX + ")"));
+    var inf = info[id] || {};
+    var im = el("span", undefined, "nz-dlg-i");
+    if (inf.i) {
+      var img = el("img");
+      img.src = inf.i;
+      img.alt = "";
+      im.appendChild(img);
+    } else {
+      im.textContent = inf.e || "";
+    }
+    var tx = el("div", undefined, "nz-dlg-t");
+    tx.appendChild(el("strong", p.nome));
+    tx.appendChild(el("span", euro.format(p.prezzo / 100)));
+    tx.appendChild(el("span", aggiunta ? "Quantità aggiunta: " + aggiunta : "Quantità massima raggiunta (" + MAX + ")"));
+    pr.appendChild(im);
+    pr.appendChild(tx);
     var tt = el("div", undefined, "nz-dlg-tot");
     tt.appendChild(el("p", r.n === 1 ? "Nel carrello c\u2019è 1 prodotto" : "Nel carrello ci sono " + r.n + " prodotti"));
     tt.appendChild(el("p", "Totale: " + euro.format(r.tot / 100), "nz-totale"));
     var az = el("div", undefined, "nz-dlg-az");
-    var b1 = el("button", "Continua lo shopping", "btn btn-outline-secondary");
+    var b1 = el("button", "Continua lo shopping", "btn nz-db nz-db-continua");
     b1.type = "button";
     b1.dataset.chiudi = "1";
-    var b2 = el("a", "Vai al carrello", "btn btn-primary");
+    var b2 = el("a", "Vai al carrello", "btn nz-db nz-db-vai");
     b2.href = link ? link.getAttribute("href") : "#carrello";
     b2.dataset.chiudi = "1";
     az.appendChild(b1);
