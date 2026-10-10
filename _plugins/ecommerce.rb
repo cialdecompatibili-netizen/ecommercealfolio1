@@ -52,7 +52,7 @@ module BoxEcommerce
         <span class="nz-ok" aria-live="polite"></span>
         </div>
         </div>
-        <p><a href="#{e.(base)}/negozio/">&larr; Torna al negozio</a> &middot; <a href="#{e.(base)}/negozio/#carrello">Vai al carrello</a></p>
+        <p><a href="#{e.(base)}/negozio/">&larr; Torna al negozio</a> &middot; <a href="#{e.(base)}/carrello/">Vai al carrello</a></p>
         </div>
       HTML
     end

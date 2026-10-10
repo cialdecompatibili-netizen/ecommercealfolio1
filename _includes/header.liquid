@@ -49,10 +49,10 @@
           5) ORDINE NEL DOM (conta per il CSS mobile): brand, <link>, .nz-cartw, <script>, hamburger. <link> e <script> sono fratelli invisibili: i selettori "+" (adiacente)
              NON funzionano fra carrello e hamburger, si usa "~". Spiegazione completa in negozio.css (blocco MOBILE). Non aggiungere margin-left:auto a entrambi.
         {% endcomment %}
-        {% capture nz_cat %}{% for b in site.data.catalogo.prodotti %}{% unless b.visibile == false %}{"id":{{ b.id | jsonify }},"p":{{ b.prezzo_centesimi | default: 0 | jsonify }},"n":{{ b.nome | jsonify }}},{% endunless %}{% endfor %}{% endcapture %}
+        {% capture nz_cat %}{% for b in site.data.catalogo.prodotti %}{% unless b.visibile == false %}{"id":{{ b.id | jsonify }},"p":{{ b.prezzo_centesimi | default: 0 | jsonify }},"n":{{ b.nome | jsonify }},"t":{{ b.tipo | default: 'fisico' | jsonify }}},{% endunless %}{% endfor %}{% endcapture %}
         <link rel="stylesheet" href="{{ '/assets/css/negozio.css' | relative_url }}">
         <div class="nz-cartw">
-          <a id="nz-cart" class="nz-cart" href="{{ '/negozio/#carrello' | relative_url }}" data-catalogo="{{ nz_cat | escape }}" aria-label="Carrello">
+          <a id="nz-cart" class="nz-cart" href="{{ '/carrello/' | relative_url }}" data-catalogo="{{ nz_cat | escape }}" aria-label="Carrello">
             <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="20" r="1.4"/><circle cx="18" cy="20" r="1.4"/><path d="M2.5 3.5h2.6l2.3 11.2a1.6 1.6 0 0 0 1.6 1.3h8.5a1.6 1.6 0 0 0 1.6-1.2l1.5-6.8H6"/></svg>
             <span class="nz-n">(0)</span>
           </a>
