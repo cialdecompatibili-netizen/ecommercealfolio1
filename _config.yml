@@ -793,3 +793,9 @@ contatti:
   endpoint: "https://contatti-form.evabomboniere.workers.dev"
   turnstile_sitekey: "0x4AAAAAAFNJy_IB22gVYOuB"
   captcha: "altcha" # "turnstile" oppure "altcha" (calcolo nel browser, senza servizi esterni). Per altcha serve il secret ALTCHA_HMAC nel Worker (crea_altcha.ps1)
+
+# Ordini del negozio (SMOKE TEST, nessun pagamento): il browser scrive una riga nel foglio Google chiamando questo Apps Script (tracker).
+# E' lo STESSO di CartaCMS e del form contatti. Non e' un segreto: chi lo conosce puo' solo AGGIUNGERE righe, non leggere il foglio.
+# Vuoto = il pulsante 'Invia richiesta d'ordine' resta spento. Lo legge _pages/negozio.md (data-tracker) e assets/js/carrello.js.
+ordini:
+  tracker: "https://script.google.com/macros/s/AKfycbzS_BXbhdL5lonAPSMcLF0d0zxBgf4L38mxBrhGMSsKrDKp-vlYMCxuWmcUURnu6Vxn/exec"

@@ -4,9 +4,9 @@
 // 1) Questo file e' caricato UNA volta da _includes/header.liquid (solo se ecommerce: true). NON rimettere <script src=carrello.js> nelle pagine:
 //    il guard window.__nzCarrello evita il doppio avvio, ma il tag in piu' non serve.
 // 2) Il contatore e i totali usano la JSON id/prezzo/nome scritto dal header in #nz-cart[data-catalogo] (stessa fonte: _data/catalogo.json). Gli id non piu'
-//    in catalogo (prodotto nascosto/eliminato) NON si contano. I prezzi mostrati sono solo indicativi: il Worker li rilegge da solo al pagamento.
+//    in catalogo (prodotto nascosto/eliminato) NON si contano. I prezzi mostrati sono solo indicativi: smoke test: nessun pagamento, l'ordine finisce nel foglio.
 // 3) Su /grazie/ il carrello viene svuotato (pagamento completato).
-// 4) Il pagamento parte solo se _data/negozio.yml ha worker_url; altrimenti il pulsante resta spento.
+// 4) SMOKE TEST: niente pagamento e niente Worker. 'Invia richiesta d'ordine' scrive una riga nel foglio Google (ordini.tracker in _config.yml).
 // 5) La finestra "aggiunto" e' un <dialog> nativo creato qui (testi con textContent, mai innerHTML: i nomi arrivano da data-*). Gli stili sono in negozio.css.
 // 6) Le pagine prodotto non hanno la tabella carrello (#nz-righe): disegna() esce subito, il contatore e la finestra funzionano lo stesso.
 (function () {
@@ -161,9 +161,9 @@
     document.getElementById("nz-totale").textContent = euro.format(tot / 100);
     document.getElementById("nz-conta").textContent = n ? "(" + n + ")" : "";
     var paga = document.getElementById("nz-paga");
-    var worker = radice.dataset.worker;
-    paga.disabled = !worker;
-    document.getElementById("nz-nota").textContent = worker ? "" : "Modalità test: il pagamento non è ancora collegato.";
+    var tr = radice.dataset.tracker;
+    paga.disabled = !tr;
+    document.getElementById("nz-nota").textContent = tr ? "" : "Modulo ordini non ancora attivo.";
   }
 
   /* ---------- finestra "prodotto aggiunto" (come PrestaShop) ---------- */
@@ -264,33 +264,91 @@
     }
   });
 
+  /* ---------- richiesta d'ordine: SMOKE TEST, NESSUN PAGAMENTO, NESSUN WORKER ----------
+     Scopo: validare l'offerta. Il pulsante apre un modulo (nome + email); all'invio il browser scrive UNA RIGA nel foglio Google chiamando
+     l'Apps Script "tracker" (_config.yml > ordini.tracker, lo stesso di CartaCMS: nessun indirizzo scritto qui). Stessa convenzione di
+     order-save.php di CartaCMS: sito = dominio+pagina, bottone "ordine-completato", prodotto "nome xQta [#id]", prezzo = totale in euro,
+     browser = "smoke-test", device = "email | nome".
+     Limiti noti: la risposta del tracker e' opaca (no-cors), quindi "ricevuto" vuol dire solo "inviato senza errori di rete".
+     Antispam leggero lato browser (campo trappola + 3 secondi minimi): basta per un test, NON per un negozio vero. */
   var paga = document.getElementById("nz-paga");
-  if (paga) {
+  var modulo = document.getElementById("nz-ordine");
+  if (paga && modulo) {
+    var tracker = radice.dataset.tracker || "";
+    var esitoOrd = document.getElementById("nz-o-esito");
+    var inviaOrd = document.getElementById("nz-o-invia");
+    var t0Ord = Date.now(); // apertura pagina
+    var mostraOrd = function (m, ok) {
+      esitoOrd.textContent = m;
+      esitoOrd.style.color = ok ? "" : "#b00020";
+    };
+    var sicuro = function (s) {
+      s = String(s || "").trim();
+      return /^[=+\-@]/.test(s) ? "'" + s : s; // niente formule iniettate nel foglio
+    };
     paga.addEventListener("click", function () {
-      var worker = radice.dataset.worker;
+      modulo.hidden = false;
+      modulo.scrollIntoView({ behavior: "smooth", block: "center" });
+      document.getElementById("nz-o-nome").focus({ preventScroll: true });
+    });
+    modulo.addEventListener("submit", function (ev) {
+      ev.preventDefault();
+      if (!modulo.checkValidity()) {
+        mostraOrd("Compila nome ed email.", false);
+        return;
+      }
       var c = leggi();
-      var items = Object.keys(c)
-        .filter(function (id) {
-          return box[id] && c[id] > 0;
+      var tot = 0;
+      var voci = [];
+      Object.keys(c).forEach(function (id) {
+        if (!box[id] || !(c[id] > 0)) return;
+        tot += box[id].prezzo * c[id];
+        voci.push(box[id].nome + " x" + c[id]);
+      });
+      if (!voci.length) return;
+      var idOrd = Array.prototype.map
+        .call(crypto.getRandomValues(new Uint8Array(4)), function (x) {
+          return ("0" + x.toString(16)).slice(-2);
         })
-        .map(function (id) {
-          return { id: id, qty: c[id] };
-        });
-      if (!worker || !items.length) return;
-      fetch(worker.replace(/\/$/, "") + "/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: items }),
-      })
-        .then(function (r) {
-          return r.json();
-        })
-        .then(function (d) {
-          if (d.url) location.href = d.url;
-          else alert(d.errore || "Errore nel pagamento");
-        })
+        .join("")
+        .toUpperCase();
+      var fatto = function () {
+        salva({});
+        disegna();
+        badge(false);
+        modulo.reset();
+        modulo.hidden = true;
+        mostraOrd("", true);
+        var g = document.getElementById("nz-grazie");
+        g.textContent = "Richiesta ricevuta (n. " + idOrd + "). Nessun pagamento è stato effettuato: ti scriviamo noi all'email indicata per confermare l'ordine.";
+        g.hidden = false;
+        g.focus();
+        inviaOrd.disabled = false;
+      };
+      // bot: campo trappola compilato o invio troppo veloce -> finto "ok", niente riga nel foglio
+      if (document.getElementById("nz-o-web").value || Date.now() - t0Ord < 3000) {
+        fatto();
+        return;
+      }
+      if (!tracker) {
+        mostraOrd("Modulo ordini non ancora attivo.", false);
+        return;
+      }
+      inviaOrd.disabled = true;
+      mostraOrd("Invio in corso...", true);
+      var q = new URLSearchParams({
+        sito: location.hostname + location.pathname,
+        bottone: "ordine-completato",
+        prodotto: sicuro(voci.join(", ") + " [#" + idOrd + "]").slice(0, 500),
+        prezzo: String(tot / 100),
+        browser: "smoke-test",
+        device: sicuro(document.getElementById("nz-o-email").value.slice(0, 150) + " | " + document.getElementById("nz-o-nome").value.slice(0, 100)),
+      });
+      fetch(tracker + (tracker.indexOf("?") < 0 ? "?" : "&") + q.toString(), { mode: "no-cors" })
+        .then(fatto)
         .catch(function () {
-          alert("Errore di rete");
+          mostraOrd("Errore di rete. Riprova.", false);
+          inviaOrd.disabled = false;
         });
     });
   }

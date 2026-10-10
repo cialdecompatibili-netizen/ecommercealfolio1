@@ -7,7 +7,7 @@ nav: true
 nav_order: 1
 ecommerce: true
 ---
-<div id="negozio" data-worker="{{ site.data.negozio.worker_url }}">
+<div id="negozio" data-tracker="{{ site.ordini.tracker }}">
 <div class="nz-pills">
 <button type="button" class="nz-pill on" data-cat="">Tutti</button>
 {% for c in site.data.catalogo.categorie %}
@@ -36,14 +36,24 @@ ecommerce: true
 </div>
 <h2 id="carrello">Carrello <small id="nz-conta" class="text-muted"></small></h2>
 <p id="nz-vuoto">Il carrello è vuoto.</p>
+<p id="nz-grazie" class="nz-grazie fw-bold" role="status" tabindex="-1" hidden></p>
 <div id="nz-pieno" hidden>
 <table class="nz-tab">
 <thead><tr><th>Box</th><th>Quantità</th><th>Totale</th><th></th></tr></thead>
 <tbody id="nz-righe"></tbody>
 </table>
 <p>Totale <span id="nz-totale" class="nz-totale"></span></p>
-<button type="button" id="nz-paga" class="btn btn-primary">Procedi al pagamento</button>
+<button type="button" id="nz-paga" class="btn btn-primary">Invia richiesta d'ordine</button>
 <button type="button" id="nz-svuota" class="btn btn-outline-secondary">Svuota il carrello</button>
 <p id="nz-nota" class="text-muted mt-2"></p>
+<form id="nz-ordine" class="nz-ordine" style="max-width:480px;margin-top:1.5rem" hidden novalidate>
+<h3>I tuoi dati</h3>
+<p class="text-muted">Nessun pagamento adesso: ti scriviamo noi per confermare l'ordine.</p>
+<label class="d-block mb-3">Nome<input type="text" class="form-control" id="nz-o-nome" maxlength="100" required autocomplete="name"></label>
+<label class="d-block mb-3">Email<input type="email" class="form-control" id="nz-o-email" maxlength="150" required autocomplete="email"></label>
+<div style="position:absolute;left:-9999px;height:0;overflow:hidden" aria-hidden="true"><label for="nz-o-web">Non compilare</label><input type="text" id="nz-o-web" tabindex="-1" autocomplete="off"></div>
+<button type="submit" class="btn btn-primary" id="nz-o-invia">Conferma richiesta</button>
+<p id="nz-o-esito" class="mt-2" role="status" aria-live="polite"></p>
+</form>
 </div>
 </div>
