@@ -70,6 +70,8 @@
 @keyframes nz-bump { 30% { transform: scale(1.35); } 60% { transform: scale(.92); } }
 @media (prefers-reduced-motion: reduce) { .nz-cart.nz-bump svg { animation: none; } }
 
+/* Finestra "prodotto aggiunto" (creata da carrello.js > apri()). Sta FUORI da #negozio: per questo usa classi globali nz-dlg*, nz-db* e le variabili
+   --nz-* definite su :root. Bottoni nz-db-*: stessa forma di quelli del carrello (pillola con contorno, si riempie al passaggio); verde = azione principale. */
 .nz-dialog { border: 1px solid var(--nz-bordo); border-radius: 14px; padding: 0; background: var(--nz-sfondo); color: var(--nz-testo); width: min(30rem, calc(100% - 2rem)); box-shadow: 0 12px 40px rgba(0, 0, 0, .25); }
 .nz-dialog::backdrop { background: rgba(0, 0, 0, .45); }
 .nz-dlg { position: relative; padding: 1.25rem 1.25rem 1rem; }
@@ -98,6 +100,8 @@
   .nz-db { width: 100%; }
 }
 
+/* ATTENZIONE: carrello.js > tieniDentro() sposta .nz-prev con un transform inline per tenerlo dentro lo schermo: niente transform su .nz-prev qui.
+   La posizione base (left/right) dipende da dove sta l'icona nel menu: vedi il blocco MOBILE/DESKTOP in alto. */
 /* Anteprima al passaggio del mouse (.nz-prev, come .blockcart .body di PrestaShop). Solo con mouse (hover:hover) e da 576px; su touch il tap va alla pagina carrello.
    Vuota (carrello a zero) = nessun contenuto, quindi non compare nemmeno il riquadro. */
 .nz-prev { display: none; position: absolute; top: 100%; left: 0; z-index: 1050; min-width: 17rem; max-width: 90vw; padding: .8rem 1rem; border: 1px solid var(--nz-bordo); border-radius: 12px; background: var(--nz-sfondo); color: var(--nz-testo); box-shadow: 0 8px 28px rgba(0, 0, 0, .2); }
