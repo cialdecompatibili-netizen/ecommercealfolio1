@@ -45,7 +45,7 @@ html[data-theme="dark"] .cs-num div,html[data-theme="dark"] .cs-card,html[data-t
   <p>Selezioniamo prodotti utili, fisici e digitali, e rendiamo l'acquisto il più semplice possibile: carrello, pochi dati e conferma. Nessuna registrazione obbligatoria.</p>
   <div class="cs-cta">
 <a class="cs-btn pri" href="{{ '/contatti/' | relative_url }}">Scrivici</a>
-<a class="cs-btn" href="{{ '/negozio/' | relative_url }}">Vai al negozio</a>
+{% if site.ecommerce == true %}<a class="cs-btn" href="{{ '/negozio/' | relative_url }}">Vai al negozio</a>{% endif %}
   </div>
 </div>
 
@@ -54,6 +54,6 @@ html[data-theme="dark"] .cs-num div,html[data-theme="dark"] .cs-card,html[data-t
   <p>Scrivici e ti aiutiamo a scegliere il prodotto giusto, per te o per un regalo.</p>
   <div class="cs-cta">
 <a class="cs-btn pri" href="{{ '/contatti/' | relative_url }}">Scrivici</a>
-<a class="cs-btn" href="{{ '/negozio/' | relative_url }}">Vai al negozio</a>
+{% if site.ecommerce == true %}<a class="cs-btn" href="{{ '/negozio/' | relative_url }}">Vai al negozio</a>{% endif %}
   </div>
 </div>
