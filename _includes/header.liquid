@@ -49,7 +49,7 @@
           5) ORDINE NEL DOM (conta per il CSS mobile): brand, <link>, .nz-cartw, <script>, hamburger. <link> e <script> sono fratelli invisibili: i selettori "+" (adiacente)
              NON funzionano fra carrello e hamburger, si usa "~". Spiegazione completa in negozio.css (blocco MOBILE). Non aggiungere margin-left:auto a entrambi.
         {% endcomment %}
-        {% capture nz_cat %}{% for b in site.data.catalogo.prodotti %}{% unless b.visibile == false %}{"id":{{ b.id | jsonify }},"p":{{ b.prezzo_centesimi | default: 0 | jsonify }},"n":{{ b.nome | jsonify }},"t":{{ b.tipo | default: 'fisico' | jsonify }}},{% endunless %}{% endfor %}{% endcapture %}
+        {% capture nz_cat %}{% for b in site.data.catalogo.prodotti %}{% unless b.visibile == false %}{"id":{{ b.id | jsonify }},"p":{{ b.prezzo_centesimi | default: 0 | jsonify }},"n":{{ b.nome | jsonify }},"t":{{ b.tipo | default: 'fisico' | jsonify }},"u":{{ '/negozio/' | append: b.id | append: '/' | relative_url | jsonify }},"i":{% if b.immagine and b.immagine != '' %}{% if b.immagine contains '://' %}{{ b.immagine | jsonify }}{% else %}{{ '/' | append: b.immagine | relative_url | jsonify }}{% endif %}{% else %}""{% endif %},"e":{{ b.icona | default: '' | jsonify }}},{% endunless %}{% endfor %}{% endcapture %}
         <link rel="stylesheet" href="{{ '/assets/css/negozio.css' | relative_url }}">
         <div class="nz-cartw">
           <a id="nz-cart" class="nz-cart" href="{{ '/carrello/' | relative_url }}" data-catalogo="{{ nz_cat | escape }}" aria-label="Carrello">

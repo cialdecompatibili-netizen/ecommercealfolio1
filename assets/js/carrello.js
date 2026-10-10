@@ -52,6 +52,7 @@
   var prezzi = {}; // id -> centesimi (dal header)
   var nomi = {}; // id -> nome (dal header, per l'anteprima)
   var tipi = {}; // id -> fisico|digitale (dal header)
+  var info = {}; // id -> {u: link scheda prodotto, i: immagine, e: icona} (dal header)
   if (link && link.dataset.catalogo) {
     try {
       JSON.parse("[" + link.dataset.catalogo + "null]").forEach(function (x) {
@@ -59,6 +60,7 @@
           prezzi[x.id] = Number(x.p) || 0;
           nomi[x.id] = String(x.n || x.id);
           tipi[x.id] = String(x.t || "fisico");
+          info[x.id] = { u: String(x.u || ""), i: String(x.i || ""), e: String(x.e || "") };
         }
       });
     } catch (e) {}
@@ -90,7 +92,15 @@
     Object.keys(c).forEach(function (id) {
       if (prezzi[id] === undefined || !(c[id] > 0)) return;
       var li = el("li");
-      li.appendChild(el("span", c[id] + " \u00d7 " + nomi[id]));
+      var nm = el("span", c[id] + " \u00d7 ");
+      if (info[id] && info[id].u) {
+        var al = el("a", nomi[id]);
+        al.href = info[id].u;
+        nm.appendChild(al);
+      } else {
+        nm.appendChild(document.createTextNode(nomi[id]));
+      }
+      li.appendChild(nm);
       li.appendChild(el("span", euro.format((prezzi[id] * c[id]) / 100)));
       ul.appendChild(li);
     });
@@ -203,7 +213,24 @@
         q_td.appendChild(q_box);
         var x_td = el("td");
         x_td.appendChild(tasto("Togli", "togli", id));
-        tr.appendChild(el("td", box[id].nome));
+        var n_td = el("td");
+        var inf = info[id] || {};
+        var pr = el(inf.u ? "a" : "span", undefined, "nz-pr");
+        if (inf.u) pr.href = inf.u;
+        var im = el("span", undefined, "nz-pr-i");
+        if (inf.i) {
+          var img = el("img");
+          img.src = inf.i;
+          img.alt = "";
+          img.loading = "lazy";
+          im.appendChild(img);
+        } else {
+          im.textContent = inf.e || "";
+        }
+        pr.appendChild(im);
+        pr.appendChild(el("span", box[id].nome, "nz-pr-n"));
+        n_td.appendChild(pr);
+        tr.appendChild(n_td);
         tr.appendChild(q_td);
         tr.appendChild(el("td", euro.format((box[id].prezzo * q) / 100)));
         tr.appendChild(x_td);
