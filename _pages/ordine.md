@@ -6,6 +6,15 @@ description: Completa il tuo ordine.
 nav: false
 ecommerce: true
 ---
+{% comment %}
+NOTE PER CHI MODIFICA QUESTA PAGINA (la logica e' in assets/js/carrello.js, blocco ORDINE):
+- Gli id nz-o-*, le classi .nz-passo / .nz-steps li / .nz-pay-o, gli attributi data-nav e data-passo sono letti dal JS: non rinominarli.
+- Passi: 1 Dati, 2 Spedizione (il JS la nasconde da solo se nel carrello ci sono solo prodotti digitali), 3 Pagamento. Non scrivere il passo 2 come obbligatorio.
+- Nuovo campo: aggiungi qui il <div class="nz-f">, poi leggilo con val("nz-o-xxx") nel JS e (se serve) aggiungilo alla riga del foglio.
+- Nuovo metodo di pagamento: vedi il commento sopra PAGAMENTI in carrello.js (3 posti).
+- #nz-o-web e' la trappola antispam: non va mostrato e non va compilato. data-tracker arriva da _config.yml > ordini.tracker (mai scritto qui).
+- I testi del riepilogo laterale (#nz-sum-fiducia) e l'hint del telefono (#nz-o-tel-h) li riscrive il JS in base a fisico/digitale.
+{% endcomment %}
 <div id="nz-ordine-pag" data-tracker="{{ site.ordini.tracker }}">
 <p id="nz-vuoto">Il carrello è vuoto. <a href="{{ '/negozio/' | relative_url }}">Vai al negozio</a></p>
 <div id="nz-pieno" hidden>

@@ -40,7 +40,7 @@
           PUNTI CRITICI
           1) Sta FUORI da .navbar-collapse, subito DOPO il nome del sito (brand), a sinistra, a ogni larghezza (come PrestaShop: carrello vicino al logo).
              CSS: margin-right:auto sull'wrapper .nz-cartw tiene l'hamburger a destra su mobile (vedi assets/css/negozio.css). NON spostarlo a destra.
-          2) data-catalogo = JSON {id,p=centesimi,n=nome} dei prodotti VISIBILI di _data/catalogo.json. Serve a contare, sommare e mostrare l'anteprima
+          2) data-catalogo = JSON {id,p=centesimi,n=nome,t=fisico|digitale,u=link scheda,i=immagine,e=icona} dei prodotti VISIBILI di _data/catalogo.json. Serve a contare, sommare e mostrare l'anteprima
              (passando il mouse) in tutte le pagine senza caricare il catalogo; un id fuori da questa lista non e' contato. Va sempre passato da | escape
              (e' dentro un attributo) e i nomi da | jsonify.
           3) Il numero e' scritto da assets/js/carrello.js (localStorage): nell'HTML statico e' (0). Lo script e il CSS si caricano QUI, una volta sola,

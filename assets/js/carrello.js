@@ -1,18 +1,34 @@
-// Carrello del negozio: icona nel menu con contatore (su TUTTE le pagine), finestra "aggiunto al carrello" (stile PrestaShop)
-// e carrello completo in /negozio/. Salvato nel browser (localStorage).
+// =====================================================================================================================
+// CARRELLO + ORDINE del negozio. Un solo file, caricato UNA volta da _includes/header.liquid quando la pagina ha ecommerce: true.
+// Il carrello sta nel browser (localStorage, chiave "nz_carrello" = {idProdotto: quantita'}). Nessun server, nessun pagamento reale.
+//
+// DOVE SI USA (il file capisce la pagina guardando quale contenitore esiste):
+//   - su TUTTE le pagine: icona nel menu con contatore (#nz-cart), anteprima al passaggio del mouse (#nz-prev), pop-up "prodotto aggiunto"
+//   - #negozio         -> /negozio/, /negozio/categoria/x/ e schede prodotto: card .nz-box, pulsanti + / - / Aggiungi al carrello
+//   - #nz-carrello-pag -> /carrello/: tabella righe (#nz-righe), Svuota (#nz-svuota), Continua lo shopping, Procedi all'ordine
+//   - #nz-ordine-pag   -> /ordine/: passi Dati > Spedizione (solo se c'e' un prodotto fisico) > Pagamento, con riepilogo a lato
+//
+// DA DOVE ARRIVANO I PRODOTTI
+//   _data/catalogo.json -> header.liquid li scrive in #nz-cart[data-catalogo] come {id,p,n,t,u,i,e}:
+//     id | p = prezzo in centesimi | n = nome | t = "fisico" o "digitale" | u = link alla scheda | i = immagine (vuota = si usa l'icona) | e = icona emoji
+//   Esempio di riga: {"id":"casa-eco","p":3200,"n":"Kit Casa Eco","t":"fisico","u":"/negozio/casa-eco/","i":"","e":"..."}
+//   Per aggiungere un campo: 1) header.liquid (capture nz_cat)  2) il parse qui sotto (mappa "info")  3) usarlo dove serve.
+//   Un id nel carrello che non e' piu' in catalogo (prodotto nascosto o eliminato) NON si conta e NON si mostra.
+//
 // PUNTI CRITICI
-// 1) Questo file e' caricato UNA volta da _includes/header.liquid (solo se ecommerce: true). NON rimettere <script src=carrello.js> nelle pagine:
-//    il guard window.__nzCarrello evita il doppio avvio, ma il tag in piu' non serve.
-// 2) Il contatore e i totali usano la JSON id/prezzo/nome scritto dal header in #nz-cart[data-catalogo] (stessa fonte: _data/catalogo.json). Gli id non piu'
-//    in catalogo (prodotto nascosto/eliminato) NON si contano. I prezzi mostrati sono solo indicativi: smoke test: nessun pagamento, l'ordine finisce nel foglio.
-// 3) Su /grazie/ il carrello viene svuotato (pagamento completato).
-// 4) SMOKE TEST: niente pagamento e niente Worker. 'Invia richiesta d'ordine' scrive una riga nel foglio Google (ordini.tracker in _config.yml).
-// 5) La finestra "aggiunto" e' un <dialog> nativo creato qui (testi con textContent, mai innerHTML: i nomi arrivano da data-*). Gli stili sono in negozio.css.
-// 8) PAGINE: /negozio/ (solo catalogo), /carrello/ (#nz-carrello-pag: tabella, quantita', procedi), /ordine/ (#nz-ordine-pag: passi Dati > Spedizione (solo fisici) > Conferma).
-//    L'elenco prodotti per le pagine senza card viene da #nz-cart[data-catalogo] (header.liquid: id, prezzo, nome, tipo).
-// 7) PRODOTTI FISICI/DIGITALI: data-tipo (fisico|digitale, mancante = fisico). Il campo indirizzo (#nz-o-ind) compare e viene richiesto solo se nel carrello c'e'
-//    almeno un prodotto fisico; finisce nella colonna device del foglio ("email | nome | indirizzo", oppure "| digitale"). Nessun abbonamento.
-// 6) Le pagine prodotto non hanno la tabella carrello (#nz-righe): disegna() esce subito, il contatore e la finestra funzionano lo stesso.
+// 1) NON rimettere <script src=carrello.js> nelle singole pagine: window.__nzCarrello evita il doppio avvio, ma il tag in piu' non serve.
+// 2) Testi che vengono da fuori (nomi, icone, indirizzi scritti dal cliente): SEMPRE textContent / el(), MAI innerHTML con quei dati.
+// 3) FISICO / DIGITALE: box[id].fisico. serve() = nel carrello c'e' almeno un fisico -> compare il passo Spedizione (indirizzo obbligatorio).
+//    Solo digitali: niente indirizzo, corriere o reso nei testi (adattaTipo()) e nel foglio la riga dice "digitale". Misto: come i fisici.
+// 4) ORDINE = SMOKE TEST (blocco "ORDINE" piu' sotto): nessun pagamento e nessun numero di carta. Scrive UNA riga nel foglio Google
+//    (_config.yml > ordini.tracker: nessun indirizzo scritto qui) e mostra sempre un errore di pagamento. Il carrello NON si svuota.
+//    Per passare a un ordine vero: sostituire mostraErrore() con il pagamento reale, poi salva({}) e redirect a /grazie/.
+// 5) /grazie/ svuota il carrello (pagina senza contenitori: ramo "if (!radice)" qui sotto).
+// 6) Id e classi che usano insieme JS e CSS (non rinominarli in uno solo dei due): nz-o-* (campi ordine), .nz-passo, .nz-steps li, [data-nav],
+//    .nz-pay-o, #nz-riep-dati, #nz-sum-righe / #nz-sum-tot / #nz-sum-fiducia, #nz-o-esito, #nz-o-invia, #nz-o-web (trappola antispam: deve restare vuota).
+// 7) CSS: le classi che iniziano con nz- sono nella safelist di purgecss (deploy), quindi quelle create da JS funzionano. Un prefisso diverso verrebbe tolto.
+// 8) Anteprima del menu: tieniDentro() mette un transform inline su #nz-prev per non uscire dallo schermo: non usare transform nel CSS di .nz-prev.
+// =====================================================================================================================
 (function () {
   if (window.__nzCarrello) return;
   window.__nzCarrello = true;
@@ -191,6 +207,9 @@
     if (tt) tt.textContent = euro.format(tot / 100);
   }
   var concluso = false; // ordine inviato: nascondo carrello e modulo
+  /* disegna(): ridisegna TUTTO cio' che dipende dal carrello (badge, tabella in /carrello/, riepilogo laterale in /ordine/, passi dell'ordine).
+     Va richiamata dopo ogni salva(c). Il passo corrente dell'ordine si riallinea da solo: se il carrello diventa tutto digitale il passo
+     Spedizione sparisce, se torna un fisico riappare. */
   function disegna() {
     badge();
     var righe = document.getElementById("nz-righe");
@@ -252,6 +271,9 @@
   }
 
   /* ---------- finestra "prodotto aggiunto" (come PrestaShop) ---------- */
+  /* Pop-up "prodotto aggiunto" (<dialog> nativo creato qui, testi sempre con textContent).
+     Classi: nz-dlg* = struttura, nz-db-continua = arancio con contorno, nz-db-vai = verde pieno. Stili in negozio.css (blocco .nz-dialog).
+     Ordine bottoni: desktop Continua a sinistra e Vai al carrello a destra; su mobile e' invertito dal CSS (column-reverse), non da qui. */
   function apri(id, aggiunta) {
     var d = document.getElementById("nz-dialog");
     if (!d) {
@@ -390,6 +412,11 @@
   var modulo = document.getElementById("nz-ordine");
   var passo = 1;
   var vai = function () {};
+  /* AGGIUNGERE UN METODO DI PAGAMENTO: 3 posti, con la stessa chiave.
+     1) _pages/ordine.md: nuovo <label class="nz-pay-o"> con <input type="radio" name="nz-pay" value="CHIAVE">
+     2) PAGAMENTI (qui sotto): CHIAVE: "Nome leggibile" (finisce nel foglio Google)
+     3) ERRORI (qui sotto): CHIAVE: "Errore: ..." (messaggio mostrato nello smoke test)
+     Esempio: value="postepay" -> PAGAMENTI.postepay = "PostePay" e ERRORI.postepay = "Errore: carta PostePay non autorizzata." */
   var PAGAMENTI = {
     carta: "Carta di credito o debito",
     bancomat: "Bancomat / PagoBANCOMAT",
@@ -517,6 +544,9 @@
       document.getElementById(id).focus();
       return false;
     };
+    /* VALIDAZIONE per passo (n = 1 dati, n = 2 spedizione). Se qualcosa non va: mette il messaggio in .nz-err del passo, porta il focus sul campo
+       (campo()) e ritorna false. Il passo 2 gira solo se serve() cioe' c'e' un prodotto fisico.
+       Esempio nuovo paese con CAP a 4 cifre: aggiungilo a <select id="nz-o-paese"> in ordine.md e alla condizione cap4 qui sotto. */
     var valida = function (n) {
       errore(n, "");
       if (n === 1) {
@@ -583,6 +613,8 @@
         .join("")
         .toUpperCase();
       // errore di pagamento (smoke test): il carrello NON si svuota
+      /* PUNTO DI SVOLTA smoke test -> ordine vero: qui oggi si mostra sempre l'errore e il carrello resta intatto. Con un pagamento reale
+         si manderebbe l'esito al foglio/gestionale, poi salva({}), disegna() e redirect a /grazie/ (che svuota comunque il carrello). */
       var mostraErrore = function () {
         esitoOrd.className = "nz-esito nz-esito-err";
         esitoOrd.textContent = ERRORI[m] + " Nessun importo è stato addebitato (modalità test). Riprova o scegli un altro metodo di pagamento. Rif. " + idOrd;
